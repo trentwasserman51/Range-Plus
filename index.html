@@ -90,7 +90,7 @@ if(PERR)h+=`<div class="card" style="border-color:var(--red)"><b style="color:va
 if(ON==="empty"&&CE)h+=`<div class="card ban"><div class="mut">SHARE WITH PLAYERS</div><div class="q" style="font-size:13px;margin:4px 0 8px">Put your players and plays online so the players on your team list can view them. Only you can make changes.</div><button class="btn" style="width:100%" onclick="goOnline()">Put my data online</button></div>`;
 else if(ON==="none")h+=`<div class="card"><div class="mut">Nothing has been shared yet.</div></div>`;
 else if(ON==="on")h+=`<div class="q" style="margin-bottom:8px">${CE?"Online. Players on your team list can view your data.":"You’re viewing shared data. Only the coach can make changes."}</div>`;
-if(window.RP_BACKEND)h+=`<div class="q" style="margin-bottom:8px;font-size:13px">Signed in as ${esc(RP_BACKEND.email())} · <a href="#" onclick="RP_BACKEND.signOut();return false" style="color:var(--blue)">Sign out</a></div>`;
+if(window.RP_BACKEND)h+=`<div class="q" style="margin-bottom:8px;font-size:13px">${RP_BACKEND.email()?"Signed in as "+esc(RP_BACKEND.email()):"Viewing with the team code"} · <a href="#" onclick="RP_BACKEND.signOut();return false" style="color:var(--blue)">${RP_BACKEND.email()?"Sign out":"Leave"}</a></div>`;
 return h}
 function mig(){if(!Array.isArray(S.pl))S.pl=[];if(!Array.isArray(S.pk))S.pk=[];if(!S.last)S.last={};
 if(!Array.isArray(S.tm)||!S.tm.length)S.tm=[{id:"t1",name:"Genesee CC"},{id:"t2",name:"Batavia Muckdogs"}];
