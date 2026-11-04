@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Range Plus</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#050b18">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Range Plus">
+<script src="config.js"></script>
+<script src="backend.js"></script>
+<style>
+:root{color-scheme:dark;--bg:#050b18;--card:#0b1630;--ink:#eef2fb;--mut:#8b9bbd;--line:#1a2b52;--gold:#fdb913;--acc:#fdb913;--on:#0a1730;--blue:#7aa6ff;--red:#f87171;--amb:#fbbf24;--grn:#4ade80;--fld:#143b38;--dirt:#4a3f2b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#050b18;--card:#0b1630;--ink:#eef2fb;--mut:#8b9bbd;--line:#1a2b52;--gold:#fdb913;--acc:#fdb913;--on:#0a1730;--blue:#7aa6ff;--red:#f87171;--amb:#fbbf24;--grn:#4ade80;--fld:#143b38;--dirt:#4a3f2b}}
+:root[data-theme="dark"]{--bg:#050b18;--card:#0b1630;--ink:#eef2fb;--mut:#8b9bbd;--line:#1a2b52;--gold:#fdb913;--acc:#fdb913;--on:#0a1730;--blue:#7aa6ff;--red:#f87171;--amb:#fbbf24;--grn:#4ade80;--fld:#143b38;--dirt:#4a3f2b}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:640px;margin:0 auto;padding:16px}
+h1{font-size:20px;margin:0 0 2px}h2{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--acc);margin:18px 0 8px}
+.sub,.mut{color:var(--mut);font-size:13px}.brand{display:flex;align-items:center;gap:12px;background:linear-gradient(90deg,#07183d,#0b2a66);border-bottom:4px solid #fdb913;border-radius:12px;padding:12px 14px;margin-bottom:16px;cursor:pointer}.brand b{display:block;font-size:22px;letter-spacing:.14em;color:#fff;line-height:1}.brand b i{font-style:normal;color:#fdb913}.brand span{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#c9d7f5;margin-top:4px}.sub{margin-bottom:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.btn{background:var(--gold);color:var(--on);border:0;border-radius:10px;padding:12px 16px;font-weight:700;font-size:15px}
+.btn.g{background:transparent;color:var(--mut);border:1px solid var(--line);font-weight:600}
+.btn.d{background:transparent;color:var(--red);border:1px solid var(--line);padding:8px 12px}
+input,select,textarea{width:100%;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{padding:11px 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:600}
+.chip.on{background:var(--gold);color:var(--on);border-color:var(--gold)}
+.chip.good.on{background:var(--grn);color:#fff;border-color:var(--grn)}.chip.bad.on{background:var(--red);color:#fff;border-color:var(--red)}
+.q{color:var(--mut);font-size:12px}.ban{border-left:4px solid var(--gold)}.warn{color:var(--red);font-size:13px}
+.bar{height:6px;border-radius:3px;background:var(--line);margin-top:6px;overflow:hidden}.bar i{display:block;height:100%}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}.tile b{font-size:22px;display:block}
+.add{display:grid;grid-template-columns:1fr 90px auto;gap:8px}
+.sticky{position:sticky;bottom:0;background:var(--bg);padding:10px 0}
+table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:6px 4px;text-align:left;border-bottom:1px solid var(--line)}
+svg{display:block;width:100%;touch-action:manipulation}
+.lt{border-collapse:separate;border-spacing:0;width:max-content;min-width:100%}
+.lt th,.lt td{padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap;text-align:center;font-size:13px}
+.lt th{color:var(--mut);font-weight:600;cursor:pointer}
+.lt th:first-child,.lt td:first-child{position:sticky;left:0;background:var(--card);text-align:left;z-index:1;border-right:1px solid var(--line)}
+.ro .rw{display:none!important}
+.vl{display:inline-block;margin:6px 8px 0 0;padding:6px 10px;border:1px solid var(--line);border-radius:8px;color:var(--gold);text-decoration:none;font:600 13px system-ui,sans-serif;background:transparent}
+.lt td.sel{background:rgba(185,137,0,.14)}.lt td.dim{opacity:.5}
+</style></head><body><main id="app"></main>
+<script>
+(function(){const show=m=>{let d=document.getElementById("dbg");if(!d){d=document.createElement("div");d.id="dbg";d.style.cssText="position:fixed;left:8px;right:8px;bottom:8px;z-index:99;background:#7f1d1d;color:#fff;padding:10px 12px;border-radius:10px;font:12px/1.4 system-ui,sans-serif;max-height:40vh;overflow:auto";d.onclick=()=>d.remove();document.body.appendChild(d)}d.textContent=("Problem: "+m+"  (tap to dismiss)").slice(0,600)};
+window.addEventListener("error",e=>{const t=e.target;if(t&&t.tagName==="VIDEO")return;show((e.message||"error")+(e.lineno?" line "+e.lineno:""))},true);
+window.addEventListener("unhandledrejection",e=>show("promise: "+((e.reason&&(e.reason.message||e.reason.code))||e.reason)));
+document.addEventListener("securitypolicyviolation",e=>show("blocked by "+e.violatedDirective+": "+String(e.blockedURI).slice(0,80)));
+window.__dbg=show})();
+const TL=[["pre","Pre-Pitch","On the way down at contact"],["step","First Step","Gained ground in the right direction"],["range","Range / Path","Direct path, efficient footwork"],["catch","Catch","Clean and efficient"],["arm","Arm Strength","Enough on the throw"],["acc","Accuracy","Throw on target"],["time","Throw Timing","On time"]];
+const TX=[["Set",["Quick release (no shuffle)","1-step shuffle","2-step shuffle","Crow hop","Backhand drop step"]],["On the run",["Throw-through (right-left)","Bare-hand and throw","Backhand, on the run"]],["Off-balance",["Across the body","Falling away","Sidearm / low slot","From the knees","After a dive","Off the wrong foot"]],["Jump",["Jump throw","Backhand jump / spin"]],["Flip",["Glove flip / underhand","Backhand flip"]]],GH={Set:"Feet gathered under him","On the run":"Momentum going to the target","Off-balance":"Body not in a good throwing position",Jump:"Leaves the ground to throw",Flip:"Short, soft toss"},TT=TX.map(g=>g[0]),GM={};TX.forEach(([g,a])=>a.forEach(n=>GM[n]=g));const grp=x=>GM[x.tt]||x.tt||"",TM=["High","Low","Arm side","Glove side","Short"],TMA=["High","Low","Arm side","Glove side","Short","Left","Right"],tms=x=>Array.isArray(x.tm)?x.tm:(x.tm?[x.tm]:[]);
+const PL=["6-3","4-3","5-3","3U","3-1","6-4","4-6","5-4","6-4-3","4-6-3","5-4-3","Other"];
+const CX=["Backhand","Forehand","Charge","Dive"];
+const SR=["91–100%","76–90%","51–75%","26–50%","0–25%"],EP=[.955,.83,.63,.38,.125];
+const RS=[["out","Out"],["safe","Safe"],["err","Error"],["miss","Didn’t reach"]],RL=Object.fromEntries(RS);
+const FIELD=`<polygon points="152,240 0,88 0,0 304,0 304,88" fill="var(--fld)"/><clipPath id="cp"><polygon points="152,240 0,88 0,0 304,0 304,88"/></clipPath><circle cx="152" cy="143.2" r="152" fill="var(--dirt)" clip-path="url(#cp)"/><polygon points="152,240 253.8,138.2 152,36.4 50.2,138.2" fill="var(--fld)" stroke="var(--dirt)" stroke-width="12" stroke-linejoin="round"/><circle cx="152" cy="143.2" r="9" fill="var(--dirt)"/><line x1="152" y1="240" x2="0" y2="88" stroke="#fff" stroke-opacity=".7"/><line x1="152" y1="240" x2="304" y2="88" stroke="#fff" stroke-opacity=".7"/><g fill="#fff"><rect x="249.8" y="134.2" width="8" height="8"/><rect x="148" y="32.4" width="8" height="8"/><rect x="46.2" y="134.2" width="8" height="8"/><polygon points="152,244 147,239 147,235 157,235 157,239"/></g>`;
+let S={pl:[],pk:[],last:{},tm:[],ct:""},V={n:"list"},L=null;
+try{S=Object.assign(S,JSON.parse(localStorage.getItem("ifl1")))}catch(e){try{const r=localStorage.getItem("ifl1");if(r)localStorage.setItem("ifl1_corrupt",r)}catch(x){}}
+let DB=null,CE=false,RO=false,ON="off",META=null,PLY=null,SYN={},PT=null,PBUSY=false,PDIRTY=0,LATER=0,PERR="",SEEN=0;
+const cj=o=>JSON.stringify(o,(k,v)=>v&&typeof v==="object"&&!Array.isArray(v)?Object.keys(v).sort().reduce((r,x)=>(r[x]=v[x],r),{}):v);
+function dbk(){const d={},pls=S.pl.filter(p=>!p.demo);d["rp/meta"]={tm:S.tm.filter(t=>t.id!=="demo"),pl:pls};
+pls.forEach(p=>{const a=S.pk.filter(x=>x.pid===p.id);for(let i=0;i*100<a.length;i++)d["plays/"+p.id+"_"+i]={pid:p.id,i,pk:a.slice(i*100,i*100+100)}});return JSON.parse(JSON.stringify(d))}
+function sched(){PDIRTY=1;clearTimeout(PT);PT=setTimeout(runPush,800)}
+function runPush(){if(PBUSY){PT=setTimeout(runPush,800);return}PDIRTY=0;pushNow()}
+async function pushNow(){if(!DB||RO||ON!=="on"||PBUSY)return;PBUSY=true;
+try{const d=dbk();for(const k of Object.keys(d)){const j=cj(d[k]);if(SYN[k]!==j){await DB.doc(k).set(d[k]);SYN[k]=j}}
+for(const k of Object.keys(SYN)){if(!(k in d)){await DB.doc(k).delete();delete SYN[k]}}PERR=""}catch(e){PERR=(e&&e.code)||"error";SYN={}}
+PBUSY=false;if(LATER&&!PDIRTY){LATER=0;tryApply()}else rd()}
+function tryApply(){if(META===undefined||PLY===null)return;if(!RO&&ON==="on"&&(PDIRTY||PBUSY)){LATER=1;return}applyRemote()}
+function applyRemote(){if(!META){if(ON!=="on")ON=CE?"empty":"none";rd();return}
+ON="on";RO=!CE;
+if(CE&&!SEEN){SEEN=1;try{const r=localStorage.getItem("ifl1");if(r&&!localStorage.getItem("ifl1_pre_online"))localStorage.setItem("ifl1_pre_online",r)}catch(e){}}
+const keep=S.pl.filter(p=>p.demo),kid=new Set(keep.map(p=>p.id)),by={};
+PLY.forEach(d=>{(by[d.pid]=by[d.pid]||[]).push(d)});
+const dp=(META.pl||[]).slice(),pk=[];dp.forEach(p=>{(by[p.id]||[]).slice().sort((a,b)=>a.i-b.i).forEach(d=>pk.push(...(d.pk||[])))});
+S.pl=dp.concat(keep);S.pk=pk.concat(S.pk.filter(x=>kid.has(x.pid)));S.tm=(META.tm||[]).concat(keep.length?(S.tm.filter(t=>t.id==="demo")):[]);
+if(CE){SYN={};SYN["rp/meta"]=cj({tm:META.tm||[],pl:META.pl||[]});PLY.forEach(d=>{SYN["plays/"+d.pid+"_"+d.i]=cj(d)})}
+mig();if(CE)save();rd()}
+async function goOnline(){if(!DB||!CE)return;try{const r=localStorage.getItem("ifl1");if(r)localStorage.setItem("ifl1_pre_online",r)}catch(e){}
+ON="on";RO=false;SYN={};PBUSY=false;await pushNow();if(PERR)ON="empty";rd()}
+function stat(){let h="";
+if(PERR)h+=`<div class="card" style="border-color:var(--red)"><b style="color:var(--red)">Couldn’t save online (${esc(PERR)}).</b><div class="q">Your data is still saved on this device. Make any change to try again.</div></div>`;
+if(ON==="empty"&&CE)h+=`<div class="card ban"><div class="mut">SHARE WITH PLAYERS</div><div class="q" style="font-size:13px;margin:4px 0 8px">Put your players and plays online so the players on your team list can view them. Only you can make changes.</div><button class="btn" style="width:100%" onclick="goOnline()">Put my data online</button></div>`;
+else if(ON==="none")h+=`<div class="card"><div class="mut">Nothing has been shared yet.</div></div>`;
+else if(ON==="on")h+=`<div class="q" style="margin-bottom:8px">${CE?"Online. Players on your team list can view your data.":"You’re viewing shared data. Only the coach can make changes."}</div>`;
+if(window.RP_BACKEND)h+=`<div class="q" style="margin-bottom:8px;font-size:13px">Signed in as ${esc(RP_BACKEND.email())} · <a href="#" onclick="RP_BACKEND.signOut();return false" style="color:var(--blue)">Sign out</a></div>`;
+return h}
+function mig(){if(!Array.isArray(S.pl))S.pl=[];if(!Array.isArray(S.pk))S.pk=[];if(!S.last)S.last={};
+if(!Array.isArray(S.tm)||!S.tm.length)S.tm=[{id:"t1",name:"Genesee CC"},{id:"t2",name:"Batavia Muckdogs"}];
+if(S.pl.some(p=>p.demo&&!p.tm)&&!S.tm.some(t=>t.id==="demo"))S.tm.push({id:"demo",name:"Demo"});
+S.pl.forEach(p=>{if(!p.tm)p.tm=p.demo?"demo":S.tm[0].id});if(!S.tm.some(t=>t.id===S.ct))S.ct=S.tm[0].id}
+mig();
+const save=()=>{try{const s=JSON.stringify(S);localStorage.setItem("ifl1",s);if(localStorage.getItem("ifl1")!==s)throw 0;window.__ns=0}catch(e){window.__ns=1}if(ON==="on"&&!RO)sched()};
+try{localStorage.setItem("ifl1_t","1");localStorage.removeItem("ifl1_t")}catch(e){window.__ns=1}
+const NS=`<div class="card" style="border-color:var(--red)"><b style="color:var(--red)">This browser isn’t saving your data.</b><div class="q">What you log may disappear when you close the app. Use Back up all data at the bottom of the Players page often.</div></div>`;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const today=()=>{const d=new Date(),z=n=>String(n).padStart(2,"0");return d.getFullYear()+"-"+z(d.getMonth()+1)+"-"+z(d.getDate())};
+const rd=()=>{const y=scrollY;render();scrollTo(0,y)};
+const msg=()=>V.msg?`<div class="card ban">${V.msg}</div>`:"";
+const f1=v=>v==null?"—":Math.round(v*100)+"%",oa=v=>(v>0?"+":"")+v.toFixed(1);
+const col=p=>p==null?"var(--mut)":p<60?"var(--red)":p<80?"var(--amb)":"var(--grn)";
+const cc=o=>{const a=Math.min(.9,.3+Math.abs(o)*.5);return o>.05?`rgba(225,70,80,${a})`:o<-.05?`rgba(70,100,210,${a})`:"#fff"};
+const ft=(i,j)=>Math.round(Math.hypot(i*16+8-152,240-(j*16+8))/1.6);
+const tdist=x=>{if(x.x==null)return null;const t=/^[456]-3$/.test(x.play)?[253.8,138.2]:/^[456]-[46]/.test(x.play)?[152,36.4]:null;return t?Math.max(15,Math.round(Math.hypot(t[0]-(x.x*16+8),t[1]-(x.y*16+8))/1.6)):null};
+const agg=a=>{const n=a.length,o=a.filter(x=>x.res==="out").length,ep=a.reduce((s,x)=>s+EP[x.st-1],0);return{n,o,sr:n?o/n:null,esr:n?ep/n:null,oaa:o-ep}};
+const cft=(i,j)=>[(i*16+8-152)/1.6,(240-(j*16+8))/1.6];
+const cov=x=>x.sx!=null&&x.x!=null?Math.round(Math.hypot((x.x-x.sx)*16,(x.y-x.sy)*16)/1.6):null;
+function startFor(pid){const k=S.last.st&&S.last.st[pid];if(k)return k;const p=S.pl.find(q=>q.id===pid),P=p?hs(p):[0,100];return[Math.max(0,Math.min(18,Math.floor((152+P[0]*1.6)/16))),Math.max(0,Math.min(15,Math.floor((240-P[1]*1.6)/16)))]}
+function chgP(v){L.pid=v;const c=startFor(v);L.sx=c[0];L.sy=c[1];rd()}
+const newLog=pid=>({sx:startFor(pid)[0],sy:startFor(pid)[1],pid,d:S.last.d||today(),ctx:S.last.ctx||"Game",play:"",st:0,res:"",x:null,y:null,t:{},tt:"",tm:[],et:"",c:[],note:"",vid:""});
+function go(n,id){if(n==="log"&&RO)return;V={n,id,msg:""};if(n==="log")L=newLog(id||(S.pl.find(p=>p.tm===S.ct)||S.pl[0]).id);render();scrollTo(0,0)}
+const set=(k,v)=>{L[k]=v;rd()},one=(k,v)=>{L[k]=L[k]===v?"":v;rd()};
+const tg=(k,v)=>{L.t[k]=L.t[k]===v?0:v;rd()};
+const cx=v=>{const i=L.c.indexOf(v);i<0?L.c.push(v):L.c.splice(i,1);rd()};
+function tapF(e,mode){const r=e.currentTarget.getBoundingClientRect(),i=Math.floor((e.clientX-r.left)/r.width*19),j=Math.floor((e.clientY-r.top)/r.height*16);
+if(i<0||j<0||i>18||j>15)return;if(mode==="log"){if(V.lm==="s"){L.sx=i;L.sy=j}else{L.x=i;L.y=j}}else if(mode==="t")V.tcell=[i,j];else if(mode==="s"){if(RO)return;const p=S.pl.find(x=>x.id===V.id);p.hx=(i*16+8-152)/1.6;p.hy=(240-(j*16+8))/1.6;save()}else V.cell=[i,j];rd()}
+function addP(){if(RO)return;const n=document.getElementById("nm").value.trim();if(!n)return;S.pl.push({id:Date.now().toString(36),name:n,pos:document.getElementById("ps").value,tm:S.ct});save();render()}
+function delP(id){if(RO)return;if(V.cf!==id){V.cf=id;rd();return}V.cf=null;S.pk.filter(x=>x.pid===id&&x.hv).forEach(x=>{vdel(x.id);if(x.va)dA(x.va)});S.pl=S.pl.filter(p=>p.id!==id);S.pk=S.pk.filter(x=>x.pid!==id);save();go("list")}
+function tgm(v){const i=L.tm.indexOf(v);if(i>=0)L.tm.splice(i,1);else{const o={"Arm side":"Glove side","Glove side":"Arm side",High:"Low",Low:"High"}[v];if(o&&L.tm.includes(o))L.tm.splice(L.tm.indexOf(o),1);L.tm.push(v)}rd()}
+function editK(id){if(RO)return;const x=S.pk.find(q=>q.id===id);L=JSON.parse(JSON.stringify(x));L.tm=tms(x).slice();L.eid=id;L.t=L.t||{};L.c=L.c||[];L.vid=L.vid||"";L.note=L.note||"";V={n:"log",id:x.pid,msg:""};render();scrollTo(0,0)}
+function delK(id){if(RO)return;if(V.cf!==id){V.cf=id;rd();return}V.cf=null;vdel(id);const dx=S.pk.find(x=>x.id===id);if(dx&&dx.va)dA(dx.va);S.pk=S.pk.filter(x=>x.id!==id);save();rd()}
+function saveP(){if(RO)return;if(!(L.play&&L.st&&L.res&&L.x!=null)){V.msg="Pick the field spot, play, difficulty and result first.";render();scrollTo(0,0);return}
+if(L.res==="miss"){["catch","arm","acc","time"].forEach(k=>L.t[k]=0);L.tt="";L.tm=[]}
+if(L.t.acc!==-1)L.tm=[];
+if(L.res!=="err")L.et="";
+if(L.eid){const e=S.pk.find(q=>q.id===L.eid),f2=L.file,pid=L.pid;Object.assign(e,{pid:L.pid,d:L.d,ctx:L.ctx,play:L.play,st:L.st,res:L.res,x:L.x,y:L.y,sx:L.sx,sy:L.sy,t:L.t,tt:L.tt,tm:L.tm,et:L.et,c:L.c,note:L.note.trim(),vid:vn(L.vid)});L=null;V={n:"player",id:pid,msg:"Changes saved ✓"+(f2?" Saving video…":"")};save();render();scrollTo(0,0);if(f2)attach(e.id,f2);return}
+const nk=Date.now().toString(36)+S.pk.length,nf=L.file;S.pk.push({id:nk,pid:L.pid,d:L.d,ctx:L.ctx,play:L.play,st:L.st,res:L.res,x:L.x,y:L.y,sx:L.sx,sy:L.sy,t:L.t,tt:L.tt,tm:L.tm,et:L.et,c:L.c,note:L.note.trim(),vid:vn(L.vid)});
+S.last={d:L.d,ctx:L.ctx,st:Object.assign({},S.last.st,{[L.pid]:[L.sx,L.sy]})};save();const n=S.pk.filter(x=>x.pid===L.pid&&x.d===L.d).length;L=newLog(L.pid);V.msg="Saved ✓ "+n+" play"+(n>1?"s":"")+" logged for this date."+(nf?" Saving video…":"");render();scrollTo(0,0);if(nf)attach(nk,nf)}
+function csv(id){const p=S.pl.find(x=>x.id===id),q=v=>'"'+String(v).replace(/"/g,'""')+'"';
+const rows=[["Player","Team","Date","Type","Play","Stars","Result","Cell X","Cell Y","Ft from home",...TL.map(t=>t[1]),"Throw type","Throw group","Throw miss","Throw dist (ft)","Error on","Direction","Start X","Start Y","Ft covered","Context","Note","Video"]];
+S.pk.filter(x=>x.pid===id).forEach(x=>rows.push([p.name,tn(p.tm),x.d,x.ctx,x.play,x.st,RL[x.res],x.x??"",x.y??"",x.x!=null?ft(x.x,x.y):"",...TL.map(t=>x.t[t[0]]===1?"good":x.t[t[0]]===-1?"poor":""),x.tt||"",grp(x),tms(x).join("; "),tdist(x)??"",x.et||"",x.x!=null?DN[dirOf(x,p)]:"",x.sx??"",x.sy??"",cov(x)??"",x.c.join("; "),x.note,x.vid||""]));
+return rows.map(r=>r.map(q).join(",")).join("\n")}
+function cp(id){const c=csv(id);(navigator.clipboard?navigator.clipboard.writeText(c):Promise.reject()).then(()=>{V.msg="CSV copied. Paste it into Sheets or Excel.";rd()}).catch(()=>{V.csv=c;rd()})}
+function demo(){if(RO)return;if(S.pl.some(p=>p.demo))return;if(!S.tm.some(t=>t.id==="demo"))S.tm.push({id:"demo",name:"Demo"});S.ct="demo";let s=11;const R=()=>(s=(s*9301+49297)%233280)/233280,N=()=>(R()+R()+R()-1.5)*2,lim=(v,a,b)=>Math.max(a,Math.min(b,v)),W=a=>{const r=R();let c=0;for(const[v,w]of a){c+=w;if(r<c)return v}return a[a.length-1][0]},rad=Math.PI/180;
+const SK=[["Jake Morrison","SS",.8,.8,-18,112],["Tyler Gaines","SS",.7,.6,-20,110],["Eli Santos","SS",.55,.55,-17,114],["Danny Ruiz","2B",.7,.7,17,110],["Mason Clark","2B",.85,.75,16,112],["Owen Price","2B",.6,.55,18,108],["Cole Bennett","3B",.6,.85,-32,98],["Nate Holloway","3B",.8,.7,-31,100],["Luis Ortega","3B",.7,.6,-33,96]],PX={SS:["6","4"],"2B":["4","6"],"3B":["5","4"]},SG={SS:[10,14],"2B":[9,13],"3B":[11,13]},RC=[.99,.97,.93,.8,.55],OC=[.98,.9,.75,.5,.25],GF=[.5,.7,.9,1],PK=g=>g?(a=>a[R()*a.length|0])(TX.find(x=>x[0]===g)[1]):"";
+SK.forEach(([name,pos,k,a,th0,r0],pi)=>{const id="demo"+pi,[s1,s2]=PX[pos],[sa,sr]=SG[pos],p0x=r0*Math.sin(th0*rad),p0y=r0*Math.cos(th0*rad);S.pl.push({id,name,pos,demo:1,tm:"demo",hx:p0x,hy:p0y});
+for(let i=0;i<80;i++){const chg=R()<.1,ln=!chg&&pos==="3B"&&R()<.16;let th,r,x,y,n=0;
+do{th=chg?th0*.7+N()*7:ln?-40+N()*2.5:th0+N()*sa;r=chg?70+R()*25:ln?88+N()*8:r0+N()*sr;x=lim(Math.floor((152+r*1.6*Math.sin(th*rad))/16),0,18);y=lim(Math.floor((240-r*1.6*Math.cos(th*rad))/16),0,15);n++}
+while(n<40&&Math.abs(x*16+8-152)>=240-(y*16+8)-4);
+const sfx=p0x+N()*7,sfy=p0y+N()*5,si=lim(Math.floor((152+sfx*1.6)/16),0,18),sj=lim(Math.floor((240-sfy*1.6)/16),0,15),cs=[(si*16+8-152)/1.6,(240-(sj*16+8))/1.6],d=Math.hypot(r*Math.sin(th*rad)-cs[0],r*Math.cos(th*rad)-cs[1]),st=lim(1+Math.floor(d/13+R()),1,5),dd=new Date(Date.UTC(2026,2,1+Math.floor(i/5)*5)).toISOString().slice(0,10),play=chg?s1+"-3":W([[s1+"-3",.72],[s1+"-"+s2,.14],[s1+"-"+s2+"-3",.14]]),t={};
+let res="miss",tt="",tm=[],et="",c=[];
+const reach=R()<RC[st-1]+(k-.7)*.2,pr=lim(k-d/160+.12-(reach?0:.35),.05,.97);
+["pre","step","range"].forEach(key=>{if(R()<.9)t[key]=R()<pr?1:-1});
+if(reach){
+if(R()<.015+(1-k)*.05+(st>=4?.02:0)){res="err";et="Field";t.catch=-1}
+else if(st>=4&&R()<.25){res="safe";t.catch=1}
+else{t.catch=R()<lim(k+.2,.8,.97)?1:-1;
+tt=chg?W([["On the run",.55],["Off-balance",.25],["Set",.2]]):st<=2?W([["Set",.8],["On the run",.12],["Off-balance",.08]]):st===3?W([["Set",.45],["On the run",.3],["Off-balance",.15],["Jump",.1]]):W([["Set",.15],["On the run",.35],["Off-balance",.3],["Jump",.2]]);
+if(!chg&&play===s1+"-"+s2&&st<=3&&R()<.3)tt="Flip";const dist=tdist({x,y,play})||80,mv=tt!=="Set"&&tt!=="Flip";
+t.arm=R()<lim(a+.17+(90-dist)/250-(mv?.08:0),.15,.97)?1:-1;
+t.acc=R()<lim(a+.22-(tt==="Set"||tt==="Flip"?0:tt==="On the run"?.15:.2)-(dist>=120?.05:0),.1,.97)?1:-1;
+t.time=R()<lim(k*.5+a*.5+.27-(mv?.05:0)-(st>=4?.05:0),.1,.97)?1:-1;
+const q=[t.arm,t.acc,t.time].filter(v=>v===1).length;
+if(R()<Math.min(.99,OC[st-1]*1.06+(k-.7)*.25)*GF[q]*(t.catch===1?1:.8))res="out";
+else if(t.acc===-1&&R()<.45){res="err";et="Throw"}else res="safe";
+if(t.acc===-1){tm=[TM[R()*5|0]];if(R()<.3){const o2=TM[R()*5|0];if(!tm.includes(o2))tm.push(o2)}}}}
+if(chg)c=["Charge"];else if(st>=4&&R()<.3)c=["Dive"];else if(st>=3&&R()<.4)c=["Backhand"];else if(st>=2&&R()<.3)c=["Forehand"];
+S.pk.push({id:id+"_"+i,pid:id,d:dd,ctx:"Game",play,st,res,x,y,sx:si,sy:sj,t,tt:PK(tt),tm,et,c,note:""})}});S.dv=5;save();render()}
+function clearDemo(){if(RO)return;const ids=S.pl.filter(p=>p.demo).map(p=>p.id);S.pl=S.pl.filter(p=>!p.demo);S.pk=S.pk.filter(x=>!ids.includes(x.pid));S.tm=S.tm.filter(t=>t.id!=="demo");if(!S.tm.some(t=>t.id===S.ct))S.ct=S.tm[0].id;save();render()}
+function cells(a){const m={};a.filter(x=>x.x!=null).forEach(x=>(m[x.x+","+x.y]=m[x.x+","+x.y]||[]).push(x));
+return Object.entries(m).map(([k,v])=>{const[i,j]=k.split(",").map(Number),sz=Math.min(16,5+v.length*1.8),o=(16-sz)/2;return`<rect x="${i*16+o}" y="${j*16+o}" width="${sz}" height="${sz}" fill="${cc(agg(v).oaa)}" stroke="#334" stroke-opacity=".5"/>`}).join("")}
+const selR=c=>c&&c[0]!=null?`<rect x="${c[0]*16}" y="${c[1]*16}" width="16" height="16" fill="none" stroke="var(--gold)" stroke-width="2.5"/>`:"";
+const cl=x=>x.t.arm===1&&x.t.acc===1&&x.t.time===1;
+function tcells(a){const m={};a.forEach(x=>(m[x.x+","+x.y]=m[x.x+","+x.y]||[]).push(x));
+return Object.entries(m).map(([k,v])=>{const[i,j]=k.split(",").map(Number),sz=Math.min(16,5+v.length*1.8),o=(16-sz)/2,p=v.filter(cl).length/v.length;return`<rect x="${i*16+o}" y="${j*16+o}" width="${sz}" height="${sz}" fill="${p>=.8?"#16a34a":p>=.5?"#d97706":"#dc2626"}" fill-opacity=".85" stroke="#334" stroke-opacity=".5"/>`}).join("")}
+const DEF={SS:[-34.6,106.5],"2B":[32.2,105.2],"3B":[-51.9,83.1],"1B":[55,70]},DN={bh:"Backhand side (his right)",gl:"Glove side (his left)",in:"Charging in",out:"Going back",at:"Straight at him"};
+function hs(p){if(p.hx!=null)return[p.hx,p.hy];const sa=S.pk.filter(x=>x.pid===p.id&&x.sx!=null);if(sa.length>=5)return[sa.reduce((s,x)=>s+cft(x.sx,x.sy)[0],0)/sa.length,sa.reduce((s,x)=>s+cft(x.sx,x.sy)[1],0)/sa.length];if(DEF[p.pos])return DEF[p.pos];const a=S.pk.filter(x=>x.pid===p.id&&x.x!=null);if(!a.length)return DEF.SS;return[a.reduce((s,x)=>s+(x.x*16+8-152)/1.6,0)/a.length,a.reduce((s,x)=>s+(240-(x.y*16+8))/1.6,0)/a.length]}
+function dirOf(x,p){const P=x.sx!=null?cft(x.sx,x.sy):hs(p),vx=(x.x*16+8-152)/1.6-P[0],vy=(240-(x.y*16+8))/1.6-P[1],L=Math.hypot(P[0],P[1])||1,fx=-P[0]/L,fy=-P[1]/L,f=vx*fx+vy*fy,r=vx*fy-vy*fx;
+if(Math.max(Math.abs(f),Math.abs(r))<12)return"at";return Math.abs(f)>=Math.abs(r)?(f>0?"in":"out"):(r>0?"bh":"gl")}
+const sm=p=>{const P=hs(p);return`<circle cx="${152+P[0]*1.6}" cy="${240-P[1]*1.6}" r="5" fill="var(--gold)" stroke="#111" stroke-width="2"/>`};
+function resetSpot(id){const p=S.pl.find(x=>x.id===id);delete p.hx;delete p.hy;save();rd()}
+const sRate=a=>a.length?a.filter(x=>x.res==="out").length/a.length:null,
+fdn=q=>[sRate(q),q.length,q.length?oa(agg(q).oaa)+" OAA":""],
+tpf=(a,k)=>{const g=a.filter(x=>x.t[k]===1).length,b=a.filter(x=>x.t[k]===-1).length;return[g+b?g/(g+b):null,g+b,""]},
+thr=a=>a.filter(x=>x.tt),
+cb=(a,f)=>{const q=thr(a).filter(f),g=q.filter(x=>x.t.acc===1).length,b=q.filter(x=>x.t.acc===-1).length;return[q.length?q.filter(cl).length/q.length:null,q.length,g+b?"Acc "+Math.round(g/(g+b)*100)+"%":""]},
+rr=(a,f)=>[a.length?a.filter(f).length/a.length:null,a.length,""],
+dm=c=>(a,p)=>fdn(a.filter(x=>x.x!=null&&dirOf(x,p)===c)),
+fm=(v,t)=>t==="o"?oa(v):t==="n"?Math.round(v)+" ft":Math.round(v*100)+"%";
+const MG={
+Fielding:[["OAA","o",0,a=>[a.length?agg(a).oaa:null,a.length,""]],["Success","p",0,a=>[sRate(a),a.length,""]],["Routine 1–3★","p",0,a=>fdn(a.filter(x=>x.st<=3))],["Tough 4–5★","p",0,a=>fdn(a.filter(x=>x.st>=4))],["Reached ball","p",0,a=>rr(a,x=>x.res!=="miss")],["Fielding errors","p",1,a=>rr(a.filter(x=>x.res!=="miss"),x=>x.res==="err"&&x.et!=="Throw")],["Backhand plays","p",0,a=>fdn(a.filter(x=>x.c.includes("Backhand")))],["Forehand plays","p",0,a=>fdn(a.filter(x=>x.c.includes("Forehand")))]],
+Direction:[["Backhand side","p",0,dm("bh")],["Glove side","p",0,dm("gl")],["Charging in","p",0,dm("in")],["Going back","p",0,dm("out")],["Straight at him","p",0,dm("at")],["Deep 135+ ft","p",0,a=>fdn(a.filter(x=>x.x!=null&&ft(x.x,x.y)>=135))]],
+Throwing:[["Clean throws","p",0,a=>cb(a,x=>1)],["Arm ✓","p",0,a=>tpf(thr(a),"arm")],["Accuracy ✓","p",0,a=>tpf(thr(a),"acc")],["Timing ✓","p",0,a=>tpf(thr(a),"time")],["On the run","p",0,a=>cb(a,x=>grp(x)==="On the run")],["Off-balance","p",0,a=>cb(a,x=>grp(x)==="Off-balance")],["Jump throws","p",0,a=>cb(a,x=>grp(x)==="Jump")],["Set throws","p",0,a=>cb(a,x=>grp(x)==="Set")],["Flip / short","p",0,a=>cb(a,x=>grp(x)==="Flip")],["Long 120+ ft","p",0,a=>cb(a,x=>tdist(x)>=120)],["Throw outs","p",0,a=>rr(thr(a),x=>x.res==="out")],["Throwing errors","p",1,a=>rr(thr(a),x=>x.et==="Throw")]],
+Tools:[["Pre-Pitch","p",0,a=>tpf(a,"pre")],["First Step","p",0,a=>tpf(a,"step")],["Range / Path","p",0,a=>tpf(a,"range")],["Catch","p",0,a=>tpf(a,"catch")]]};
+const NOTE={"Ground covered":"Ground covered is the distance from his logged starting spot to where he fielded the ball. Small text shows plays and OAA. Plays without a logged start are left out.","Throw types":"Each column is one throw type: share of clean throws (arm, accuracy and timing all ✓). Small text shows throws and accuracy ✓. Dimmed = fewer than 3 throws.",Fielding:"Small text shows plays.",Direction:"Direction is measured from where each player lines up, facing home plate. Backhand side is his right, glove side is his left. Small text shows plays and OAA. Move a player’s spot on his page.",Throwing:"Throw columns show clean throws (arm, accuracy and timing all ✓). Small text shows throws and accuracy ✓. For throwing errors, lower is better.",Tools:"Share of plays graded ✓."};
+MG["Ground covered"]=[["Avg ft covered","n",0,A=>{const q=A.filter(x=>cov(x)!=null);return[q.length?q.reduce((s,x)=>s+cov(x),0)/q.length:null,q.length,""]}],["Short move (<15 ft)","p",0,A=>fdn(A.filter(x=>cov(x)!=null&&cov(x)<15))],["Medium (15–29 ft)","p",0,A=>fdn(A.filter(x=>cov(x)!=null&&cov(x)>=15&&cov(x)<30))],["Long (30+ ft)","p",0,A=>fdn(A.filter(x=>cov(x)>=30))],["Long, tough 4–5★","p",0,A=>fdn(A.filter(x=>cov(x)>=30&&x.st>=4))]];
+MG["Throw types"]=TX.flatMap(([g,a])=>a.map(n=>[n,"p",0,A=>cb(A,x=>x.tt===n)]));
+function lv(k,v){V[k]=v;if(k==="g"){V.sk=0;V.sd=1}rd()}
+function sortBy(i){if((V.sk||0)===i)V.sd=-(V.sd||1);else{V.sk=i;V.sd=1}rd()}
+function leaders(){const G=V.g||"Fielding",M=MG[G],pf=V.pf||"All",sk=V.sk||0,sd=V.sd||1,pos=[...new Set(S.pl.map(p=>p.pos))].sort(),
+chip=(k,v,d)=>`<button class="chip ${(V[k]||d)===v?"on":""}" onclick="lv('${k}','${v}')">${v}</button>`;
+const lt=V.lt||S.ct,rows=S.pl.filter(p=>(lt==="all"||p.tm===lt)&&(pf==="All"||p.pos===pf)).map(p=>{const a=S.pk.filter(x=>x.pid===p.id);return{p,c:M.map(m=>{const[v,n,e]=m[3](a,p);return{v,n,e,ok:v!=null&&n>=3}})}});
+rows.sort((A,B)=>{const a=A.c[sk],b=B.c[sk];if(a.ok!==b.ok)return a.ok?-1:1;if(!a.ok)return A.p.name<B.p.name?-1:1;return((M[sk][2]?a.v-b.v:b.v-a.v)*sd)||(b.n-a.n)});
+let h=`<button class="btn g" onclick="go('list')">← Players</button><h1 style="margin-top:12px">Leaders</h1><div class="sub">Tap a column to sort. Tap it again to reverse (▼ best first).</div>
+<div class="chips" style="margin-bottom:8px">${S.tm.map(t=>`<button class="chip ${lt===t.id?"on":""}" onclick="lv('lt','${t.id}')">${esc(t.name)}</button>`).join("")}<button class="chip ${lt==="all"?"on":""}" onclick="lv('lt','all')">All teams</button></div>
+<div class="chips" style="margin-bottom:8px">${Object.keys(MG).map(g=>chip("g",g,"Fielding")).join("")}</div>
+<div class="chips" style="margin-bottom:12px">${["All",...pos].map(x=>chip("pf",x,"All")).join("")}</div>`;
+if(!rows.length)return h+`<p class="mut">No players yet.</p>`;
+h+=`<div class="card" style="padding:0;overflow-x:auto"><table class="lt"><tr><th>Player</th>${M.map((m,i)=>`<th onclick="sortBy(${i})"${i===sk?' style="color:var(--acc)"':""}>${m[0]}${i===sk?(sd>0?" ▼":" ▲"):""}</th>`).join("")}</tr>${rows.map((r,ri)=>`<tr><td><b>${r.c[sk].ok?(ri+1)+". ":""}${esc(r.p.name)}</b> <span class="q">${r.p.pos}</span></td>${r.c.map((c,i)=>`<td class="${i===sk?"sel ":""}${c.ok?"":"dim"}">${c.v==null?"—":`<b>${fm(c.v,M[i][1])}</b>`}<div class="q">${c.n?c.n+(c.e?" · "+c.e:""):""}</div></td>`).join("")}</tr>`).join("")}</table></div>`;
+return h+`<div class="q" style="margin-top:8px">Dimmed = fewer than 3 plays, ranked last. ${NOTE[G]}</div>`}
+const DR=[
+["Game Clock (Meet or Beat Clock)","H",{pre:1,step:1,range:1,catch:1,throw:1}],
+["Separator Play","H",{pre:1,step:1,range:1,catch:1,throw:1}],
+["Situational Separator Play","H",{pre:1,step:1,range:1,catch:1,throw:1}],
+["Flip Fungo Mass","H",{pre:1,step:1,range:1,catch:1,throw:1}],
+["Live BP w/o Runners","H",{pre:1,step:1,range:1,catch:1,throw:.5}],
+["BP Option 4 (Pre-Pitch Full Play)","H",{pre:1,step:1,range:1,catch:1,throw:.5}],
+["Self Fed Mass Fungo","H",{pre:1,step:1,range:1,catch:1,throw:.5}],
+["Machine Range Ruler","H",{pre:.5,step:1,range:1,catch:1,throw:1}],
+["Random Flip Fungo w/ Throw","M",{pre:1,step:1,range:1,catch:1,throw:.5}],
+["N/S/E/W Machine","M",{pre:.5,step:1,range:1,catch:1}],
+["Machine Angle Work","M",{pre:.5,step:1,range:1,catch:1,throw:.5}],
+["Flip Fungo Hop Reads","M",{pre:1,step:1,range:1,catch:1,throw:.5}],
+["Count Hops","M",{pre:1,step:1,range:1,catch:1}],
+["BP Option 3 (Pre-Pitch to Catch)","M",{pre:1,step:1,range:1,catch:1}],
+["Self Fed Fungo (Random)","M",{pre:.5,step:1,range:1,catch:1,throw:.5}],
+["DP Machine Ruler","L",{pre:.5,step:1,range:1,catch:1,throw:.5}],
+["Red Rocket Ruler","L",{pre:.5,step:1,range:1,catch:1}],
+["Random Flip Fungo w/o Throw","L",{pre:1,step:1,range:1,catch:1}],
+["BP Option 2 (Pre-Pitch 3 Steps)","L",{pre:1,step:1}],
+["BP Stop","L",{pre:1,step:.5}],
+["BP Option 1 (Pre-Pitch 1 Step)","L",{pre:1,step:.5}],
+["Screened Pre Pitch","L",{pre:1,step:.5}],
+["Turf Work","L",{catch:1}],
+["Dual Machine Picks","L",{catch:1}]];
+const AR=[["range","Range","f",1.3],["conv","Out conversion (routine plays)","f",1.3],["step","First step","f",.8],["pre","Pre-pitch","f",.6],["catch","Catch / ball security","f",1],["arm","Arm strength","t",.9],["acc","Throw accuracy","t",1.1],["time","Throw timing","t",1]];
+const STAB={range:165,step:5,conv:570,catch:45,arm:5,acc:190};
+const CMAP={range:{range:1},step:{step:1},pre:{pre:1},catch:{catch:1},conv:{catch:.5,throw:.5},arm:{throw:1},acc:{throw:1},time:{throw:1}};
+const ROUT={range:"Turf or machine routine with rangy angles to both sides (Red Rocket Ruler), staying on the move through the ball.",step:"Turf routine that starts from a pre-pitch move, then a first step on the ball (Screened Pre Pitch).",pre:"Pre-pitch timing: BP Stop or one-step pre-pitch reps, feet organized as the ball is struck or shot.",catch:"Turf work and Dual Machine Picks with mixed-bag balls to build ball security.",conv:"Routine ground balls finished with a throw to a target. These are the plays we expect to make.",arm:"Throwing routine to a plyo-mat target, from set and then on the move.",acc:"Throwing routine to a plyo-mat target, finishing every rep on the target.",time:"Game-clock throws (shot clock app): glove to target on time."};
+const CUE={range:"Range: use batted balls when you can, since they pair pre-pitch with first step. Use a machine when reps are low and intensity is high.",step:"First step: train it with a batted ball.",pre:"Pre-pitch: use flip fungo or BOB reps for timing. With a machine, have him organize his feet as the ball is shot out.",catch:"Catch: mixed-bag balls and the glove bag (weighted, mini, paddle, mini 1B and no-web gloves) add a layer of ball-security focus.",conv:"Out conversion: finish reps with a throw to a target. Routine plays are expected to be made.",arm:"Arm strength: couple reps with a throw to a target. On a no-throw day, work everything but the throw.",acc:"Accuracy: use the plyo-mat throwing targets and couple every rep with a throw to a target.",time:"Timing: use game-clock drills (speaker and shot clock app) so the throw has to be on time."};
+const IMPACT={range:"Contact-to-catch skills are the biggest predictor of a defender's value, so range comes first. More range means more balls turned into chances.",conv:"Routine plays are expected to be made. DRS is earned in dimes and lost in dollars, so converting 1–3★ plays at or above expected protects value.",step:"A better first step feeds range. If range is already good, first step may not need to be the focus.",pre:"Being on the way down at contact sets up the first step and the range that follows.",catch:"Ball security links range and hands together: fielding the ball cleanly and releasing on time.",arm:"Arm strength is predictive at the play level. Many players don't use full arm strength on every play, so train it with throws that matter.",acc:"Accuracy protects the true skill of the throw. Out conversion alone can hide it when the first baseman picks well.",time:"A throw has to be strong, accurate and on time to turn the out."};
+const PD=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],WD=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],DT={M:"Moderate",H:"High",L:"Low"},DC={M:"#f2b705",H:"var(--grn)",L:"var(--red)"};
+function areas(a){const t=k=>{const g=a.filter(x=>x.t[k]===1).length,b=a.filter(x=>x.t[k]===-1).length;return[g+b?g/(g+b):null,g+b,.8]},rt=a.filter(x=>x.st<=3),g=agg(rt);
+return AR.map(([k,name,grp,w])=>{const[v,n,tg]=k==="conv"?[g.sr,rt.length,g.esr]:t(k);return{k,name,grp,w,v,n,tg,ok:v!=null&&n>=8}})}
+function specs(a,p){const o=[],L2=a.filter(x=>x.x!=null);
+const ds=Object.keys(DN).map(c=>{const q=L2.filter(x=>dirOf(x,p)===c);return{c,n:q.length,o:q.length?agg(q).oaa/q.length:0}}).filter(d=>d.n>=5).sort((x,y)=>x.o-y.o)[0];
+if(ds&&ds.o<-.05)o.push("Range: weakest direction is "+DN[ds.c].toLowerCase()+" ("+ds.n+" plays, "+oa(ds.o*ds.n)+" OAA).");
+const dp=L2.filter(x=>ft(x.x,x.y)>=135);if(dp.length>=5){const g=agg(dp);if(g.oaa<0)o.push("Deep plays (135+ ft): "+f1(g.sr)+" success vs "+f1(g.esr)+" expected ("+dp.length+" plays).")}
+const lm=L2.filter(x=>cov(x)>=30);if(lm.length>=5){const g=agg(lm);if(g.oaa<0)o.push("Long moves (30+ ft from his start): "+f1(g.sr)+" success vs "+f1(g.esr)+" expected ("+lm.length+" plays).")}
+const rn=a.filter(x=>x.st<=3&&x.res!=="out");if(rn.length>=3)o.push(rn.length+" routine (1–3★) plays were not converted.");
+const th=a.filter(x=>x.tt);
+if(th.length>=10){const all=th.filter(cl).length/th.length,tw=TT.map(t=>{const q=th.filter(x=>grp(x)===t);return{t,n:q.length,v:q.length?q.filter(cl).length/q.length:null}}).filter(r=>r.n>=5).sort((x,y)=>x.v-y.v)[0];
+if(tw&&all-tw.v>=.1)o.push("Throws "+tw.t.toLowerCase()+": "+f1(tw.v)+" clean vs "+f1(all)+" overall ("+tw.n+" throws).");
+const sp=TX.flatMap(g=>g[1]).map(t=>{const q=th.filter(x=>x.tt===t);return{t,n:q.length,v:q.length?q.filter(cl).length/q.length:null}}).filter(r=>r.n>=5).sort((x,y)=>x.v-y.v)[0];if(sp&&all-sp.v>=.1)o.push("Weakest throw: "+sp.t.toLowerCase()+" ("+f1(sp.v)+" clean vs "+f1(all)+" overall, "+sp.n+" throws).");
+const lg=th.filter(x=>tdist(x)>=120);if(lg.length>=5){const v=lg.filter(cl).length/lg.length;if(all-v>=.1)o.push("Long throws (120+ ft): "+f1(v)+" clean vs "+f1(all)+" overall ("+lg.length+" throws).")}}
+const ms=TMA.map(t=>[t,a.filter(x=>tms(x).includes(t)).length]).sort((x,y)=>y[1]-x[1]),tot=a.filter(x=>tms(x).length).length;
+if(tot>=5&&ms[0][1]/tot>=.4)o.push("Throw misses go mostly "+ms[0][0].toLowerCase()+" ("+ms[0][1]+" of "+tot+").");
+return o}
+function pickD(lv,k,W){return DR.map((d,i)=>({d,i,s:Object.entries(d[2]).reduce((s,[c,v])=>s+(W[c]?W[c]*v:-.3*v),0)})).filter(o=>o.d[1]===lv).sort((x,y)=>y.s-x.s||x.i-y.i).slice(0,k).map(o=>o.d[0])}
+function planData(p,em,off,sd0){const a=S.pk.filter(x=>x.pid===p.id),A=areas(a),ok=A.filter(r=>r.ok),R=A.find(r=>r.k==="range"),S1=A.find(r=>r.k==="step");
+ok.forEach(r=>{let w=r.w;if(r.k==="step"&&R.ok&&R.v>=R.tg)w*=.5;if(r.k==="pre"&&R.ok&&R.v>=R.tg&&S1.ok&&S1.v>=S1.tg)w*=.3;if(em==="f"&&r.grp==="f"||em==="t"&&r.grp==="t")w*=1.5;r.pr=w*(r.tg-r.v)});
+const rk=ok.slice().sort((x,y)=>y.pr-x.pr);let foc=rk.slice(0,3);
+if(em==="bal"&&rk.length>3)["t","f"].forEach(g=>{if(!foc.some(r=>r.grp===g)){const c=rk.find(r=>r.grp===g);if(c)foc[2]=c}});
+const W={};foc.forEach((r,i)=>Object.entries(CMAP[r.k]).forEach(([c,w])=>W[c]=(W[c]||0)+w*(3-i)));
+const Hm=pickD("H",4,W),Mm=pickD("M",4,W),Lm=pickD("L",3,W);
+const str=ok.filter(r=>r.pr<=0||!foc.includes(r)).sort((x,y)=>(y.v-y.tg)-(x.v-x.tg)).slice(0,2);
+const need=foc.filter(r=>r.pr>0),pf=foc[0],pc=Math.round(pf.v*100);
+const thw=a.filter(x=>x.tt);let tw=null;if(thw.length>=10){const all=thw.filter(cl).length/thw.length;tw=TT.map(g=>{const q=thw.filter(x=>grp(x)===g);return{g,n:q.length,v:q.length?q.filter(cl).length/q.length:null,all}}).filter(r=>r.n>=5&&(r.v<r.all-.05||r.v<.7)).sort((x,y)=>x.v-y.v)[0]||null}
+const goal=r=>{const c=Math.round(r.v*100),tg=Math.round(r.tg*100);return r.k==="conv"?{c,g:Math.max(tg,Math.min(100,c+3)),lt:Math.min(100,tg+3)}:{c,g:Math.min(95,c+8),lt:Math.max(80,Math.min(95,c+15))}};
+const gs=(need.length?need:foc).slice(0,2).map(r=>({r,...goal(r)}));
+const days=[],cnt={M:0,H:0,L:0},[y,m,d]=sd0.split("-").map(Number);
+for(let i=0;i<14;i++){const dt=new Date(y,m-1,d+i),wd=dt.getDay(),ix=(wd-off-1+14)%7,label=PD[wd]+" "+(dt.getMonth()+1)+"/"+dt.getDate();
+if(ix===6){days.push({label,ty:"OFF",wk:i<7?1:2});continue}
+const ty="MHLMHL"[ix],c=cnt[ty]++,r=foc[c%foc.length],ro=ROUT[r.k];
+const pk=(arr,j)=>arr.length?arr[(c+j)%arr.length]:"";
+let dr="—",rp="—";
+if(ty==="M"){dr=pk(Mm,0)||"—";rp="Reps: "+(pk(Mm,1)||"ground-ball volume")+" (more reps, lower intensity)"}
+else if(ty==="H"){dr=pk(Hm,0)+(Hm.length>1?", then "+pk(Hm,1):"")+" (fewer reps, high intensity)";rp="Live BP reads (BP Option 4 or Live BP w/o Runners)"}
+else rp="Light reps: "+(pk(Lm,0)||"ground-ball routine");
+days.push({label,ty,wk:i<7?1:2,ro,dr,rp,tc:tw?TP[tw.g].tc:""})}
+return{p,a,A,foc,need,str,gs,Hm,Mm,Lm,days,spec:specs(a,p),pf,pc,tw}}
+function planText(D){const p=D.p,g=agg(D.a),L=[];
+L.push("PROGRAMMING PLAN: "+p.name+" ("+p.pos+")","Dates: "+D.days[0].label+" to "+D.days[13].label,"","WHERE AM I?","OAA "+oa(g.oaa)+" over "+g.n+" plays. Success "+f1(g.sr)+" vs "+f1(g.esr)+" expected.");
+if(D.need.length)L.push("Needs work: "+D.need.map(r=>r.name+" "+f1(r.v)).join("; "));
+if(D.str.length)L.push("Strengths: "+D.str.map(r=>r.name+" "+f1(r.v)).join("; "));
+D.spec.forEach(s=>L.push("- "+s));
+L.push("","WHERE AM I GOING?");
+D.gs.forEach(x=>L.push("Improve "+x.r.name+" from "+x.c+"% to "+x.g+"%."));
+L.push("2 week objective: "+D.gs.map(x=>x.r.name).join(" and ")+".");
+D.gs.forEach(x=>L.push("- Key result: "+x.r.name+" "+x.c+"% to "+x.g+"% over the next 20 logged plays"));
+L.push("- Key result: targeted drills run at about 70% success","Long-term objective: "+D.pf.name+" to "+D.gs[0].lt+"% and holding it across the season.","Why it matters: "+IMPACT[D.pf.k],"","HOW DO WE GET THERE?","High day menu: "+D.Hm.join("; "),"Moderate day menu: "+D.Mm.join("; "),"Low day menu: "+D.Lm.join("; "));
+D.foc.forEach(r=>L.push("- "+CUE[r.k]));
+if(D.tw)L.push("- Throw work ("+D.tw.g+" throws, "+f1(D.tw.v)+" clean): "+TP[D.tw.g].cp);
+L.push("","2 WEEK CALENDAR");
+D.days.forEach((d,i)=>{if(i===0||i===7)L.push("Week "+d.wk);L.push(d.ty==="OFF"?d.label+": OFF":d.label+" ("+DT[d.ty]+"): Routine: "+d.ro+" | Drill: "+d.dr+" | Reps/reads: "+d.rp+(d.tc?" | Throw work: "+d.tc:""))});
+return L.join("\n")}
+function pv(k,v){V[k]=v;V.ptxt="";rd()}
+function copyPlan(){const p=S.pl.find(x=>x.id===V.id),t=planText(planData(p,V.pe||"bal",V.po==null?1:V.po,V.ps||today()));(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{V.msg="Plan copied. Paste it into the player's channel.";V.ptxt="";rd()}).catch(()=>{V.ptxt=t;rd()})}
+function trend(a,k){const s=a.filter(x=>k==="conv"?x.st<=3:x.t[k]===1||x.t[k]===-1).map(x=>k==="conv"?(x.res==="out"?1:0):(x.t[k]===1?1:0));
+if(s.length<25)return"";const pts=[];for(let i=20;i<=s.length;i++)pts.push(s.slice(i-20,i).reduce((q,v)=>q+v,0)/20);
+const X=i=>(i/(pts.length-1)*296+2).toFixed(1),Y=v=>(56-v*52).toFixed(1);
+return`<div class="card"><div class="row"><b>Trend</b><span class="mut">20-play rolling average</span></div><svg viewBox="0 0 300 60" preserveAspectRatio="none" style="height:70px;margin-top:6px"><line x1="0" x2="300" y1="${Y(.8)}" y2="${Y(.8)}" stroke="var(--line)" stroke-dasharray="4" vector-effect="non-scaling-stroke"/><polyline points="${pts.map((v,i)=>X(i)+","+Y(v)).join(" ")}" fill="none" stroke="var(--gold)" stroke-width="2.5" vector-effect="non-scaling-stroke"/></svg></div>`}
+function planView(){const p=S.pl.find(x=>x.id===V.id);if(!p)return list();
+const em=V.pe||"bal",off=V.po==null?1:V.po,sd0=V.ps||today(),a=S.pk.filter(x=>x.pid===p.id);
+let h=`<button class="btn g" onclick="go('player','${p.id}')">← ${esc(p.name)}</button><h1 style="margin-top:12px">Programming plan</h1><div class="sub">${esc(p.name)} (${p.pos}) · built from his logged plays and the Range Plus drill library</div>${msg()}`;
+if(a.length<10)return h+`<div class="card">Log at least 10 plays for ${esc(p.name)} to build a plan (${a.length} so far). Range needs far more plays to be stable, so the plan gets better as the season grows.</div>`;
+if(areas(a).filter(r=>r.ok).length<3)return h+`<div class="card">Not enough graded plays yet. Mark the tools ✓ or ✗ on more plays (at least 8 per tool) and the plan will build itself.</div>`;
+const D=planData(p,em,off,sd0),g=agg(a),rt=agg(a.filter(x=>x.st<=3)),tf=agg(a.filter(x=>x.st>=4)),th=a.filter(x=>x.tt);
+h+=`<div class="card"><div class="mut">Emphasis</div><div class="chips" style="margin:6px 0 10px">${[["bal","Balanced"],["f","Fielding first"],["t","Throwing first"]].map(([k,l])=>`<button class="chip ${em===k?"on":""}" onclick="pv('pe','${k}')">${l}</button>`).join("")}</div><div class="row"><div style="flex:1"><div class="mut">Start date</div><input type="date" value="${sd0}" onchange="pv('ps',this.value)"></div><div style="flex:1"><div class="mut">Off day</div><select onchange="pv('po',+this.value)">${WD.map((d,i)=>`<option value="${i}" ${i===off?"selected":""}>${d}</option>`).join("")}</select></div></div></div>`;
+h+=`<h2>Where am I?</h2><div class="tiles"><div class="tile"><b>${oa(g.oaa)}</b><span class="q">OAA (stands in for DRS)</span></div><div class="tile"><b>${f1(g.sr)}</b><span class="q">Success · exp. ${f1(g.esr)}</span></div><div class="tile"><b>${f1(rt.sr)}</b><span class="q">Routine 1–3★ · exp. ${f1(rt.esr)}</span></div><div class="tile"><b>${f1(tf.sr)}</b><span class="q">Tough 4–5★ · exp. ${f1(tf.esr)}</span></div><div class="tile"><b>${th.length?f1(th.filter(cl).length/th.length):"—"}</b><span class="q">Clean throws</span></div><div class="tile"><b>${a.length}</b><span class="q">Plays logged</span></div></div>`;
+const rw=r=>`<div class="row" style="margin-bottom:4px"><b>${r.name}</b><span>${f1(r.v)} <span class="q">· goal ${f1(r.tg)} · ${r.n} logged</span></span></div>`;
+h+=`<div class="card ban"><div class="mut">NEEDS WORK</div>${D.need.length?D.need.map(rw).join(""):`<div class="q">No clear weakness. Keep stretching range.</div>`}${D.str.length?`<div class="mut" style="margin-top:10px">STRENGTHS</div>${D.str.map(rw).join("")}`:""}${D.spec.length?`<div class="mut" style="margin-top:10px">WHAT THE DATA POINTS TO</div>${D.spec.map(s=>`<div class="q" style="font-size:13px;margin-bottom:3px">• ${s}</div>`).join("")}`:""}</div>`;
+h+=trend(a,D.pf.k);
+h+=`<div class="card"><div class="mut">DATA CONFIDENCE</div><div class="q" style="margin:4px 0 8px">Each tool needs roughly this many plays before it is stable. Your ✓/✗ logs are a rougher measure, so treat early numbers as directional.</div>${Object.entries(STAB).map(([k,n])=>{const r=D.A.find(x=>x.k===k);return`<div class="row" style="margin-bottom:2px"><span>${r.name}</span><span class="q">${r.n} of ~${n}</span></div><div class="bar" style="margin:0 0 8px"><i style="width:${Math.min(100,r.n/n*100)}%;background:${r.n>=n?"var(--grn)":"var(--amb)"}"></i></div>`}).join("")}</div>`;
+h+=`<h2>Where am I going?</h2><div class="card">${D.gs.map(x=>`<div style="margin-bottom:6px"><b>Improve ${x.r.name} from ${x.c}% to ${x.g}%.</b></div>`).join("")}<div class="mut" style="margin-top:8px">2 WEEK OBJECTIVE</div><div style="margin-bottom:4px">${D.gs.map(x=>x.r.name).join(" and ")}.</div>${D.gs.map(x=>`<div class="q" style="font-size:13px">• ${x.r.k==="conv"?"Routine plays":x.r.name} ${x.c}% to ${x.g}% over the next 20 logged plays</div>`).join("")}<div class="q" style="font-size:13px">• Targeted drills run at about 70% success (make them harder if easier, easier if harder)</div>
+<div class="mut" style="margin-top:10px">LONG-TERM OBJECTIVE</div><div style="margin-bottom:4px">${D.pf.name} to ${D.gs[0].lt}% and holding it across the season.</div><div class="q" style="font-size:13px">• ${STAB[D.pf.k]?"Reach about "+STAB[D.pf.k]+" logged plays for a stable read":"Keep logging plays so the trend is trustworthy"}</div><div class="q" style="font-size:13px">• ${g.oaa<0?"OAA from "+oa(g.oaa)+" to at or above 0":"Keep OAA above 0"}; routine plays at or above expected</div>
+<div class="mut" style="margin-top:10px">WHY IT MATTERS</div><div style="font-size:14px">${IMPACT[D.pf.k]}</div></div>`;
+const mn=(l,c,arr)=>`<div style="flex:1;min-width:140px;border:2px solid ${c};border-radius:10px;padding:8px"><b style="color:${c}">${l}</b>${arr.map(x=>`<div class="q" style="font-size:13px;margin-top:3px">${x}</div>`).join("")}</div>`;
+h+=`<h2>How do we get there?</h2><div class="card"><div style="font-size:14px;margin-bottom:8px">Highest-leverage work: <b>${D.Hm.slice(0,2).join(" and ")}</b> on high days, built around ${D.foc.map(r=>r.name.toLowerCase()).join(", ")}. Targeted drill work two times a week on high days, routines every day, and live BP reads on high days.</div><div class="row" style="align-items:stretch;flex-wrap:wrap;gap:8px">${mn("Moderate day","#f2b705",D.Mm)}${mn("High day","var(--grn)",D.Hm)}${mn("Low day","var(--red)",D.Lm)}</div><div class="mut" style="margin-top:12px">FOCUS CUES</div>${D.foc.map(r=>`<div class="q" style="font-size:13px;margin-top:3px">• ${CUE[r.k]}</div>`).join("")}<button class="btn g" style="width:100%;margin-top:10px" onclick="go('drills')">What do these drills do?</button><div class="q" style="margin-top:10px">Drills come from the Range Plus drill library. Game-like wins: keep drills simple, variable and near 70% success.</div></div>`;
+h+=D.tw?`<div class="card ban"><div class="mut">THROW-TYPE WORK</div><b>${D.tw.g} throws: ${f1(D.tw.v)} clean vs ${f1(D.tw.all)} overall (${D.tw.n} throws)</b><div style="font-size:14px;margin-top:6px">${TP[D.tw.g].cp}</div><div class="q" style="margin-top:6px">${TP[D.tw.g].why}</div><button class="btn g" style="width:100%;margin-top:8px" onclick="go('drills');V.dm='th';rd()">See the full throwing program</button></div>`:`<div class="card"><div class="mut">THROW-TYPE WORK</div><div class="q" style="font-size:13px;margin-top:4px">No throw type stands out as a weakness yet. Keep a mix of throws in daily catch play.</div><button class="btn g" style="width:100%;margin-top:8px" onclick="go('drills');V.dm='th';rd()">Throwing program</button></div>`;
+h+=`<h2>2 week calendar</h2><div class="q" style="margin-bottom:8px">Moderate, High, Low follow a six-day Moderate, High, Low series, with the day after the off day as the first moderate day.</div>`;
+D.days.forEach((d,i)=>{if(i===0||i===7)h+=`<div class="mut" style="margin:10px 0 6px">WEEK ${d.wk}</div>`;
+h+=d.ty==="OFF"?`<div class="card row" style="opacity:.6"><b>${d.label}</b><span class="mut">OFF</span></div>`:`<div class="card" style="border-left:4px solid ${DC[d.ty]}"><div class="row"><b>${d.label}</b><b style="color:${DC[d.ty]}">${DT[d.ty]}</b></div><div class="q" style="font-size:13px;margin-top:6px"><b>Routine:</b> ${d.ro}</div><div class="q" style="font-size:13px;margin-top:3px"><b>Drill:</b> ${d.dr}</div><div class="q" style="font-size:13px;margin-top:3px"><b>Reps / reads:</b> ${d.rp}</div>${d.tc?`<div class="q" style="font-size:13px;margin-top:3px"><b>Throw work:</b> ${d.tc}</div>`:""}</div>`});
+h+=`<button class="btn" style="width:100%;margin-top:8px" onclick="copyPlan()">Copy plan as text</button>`;
+if(V.ptxt)h+=`<textarea rows="10" readonly style="margin-top:10px" onclick="this.select()">${esc(V.ptxt)}</textarea>`;
+return h+`<div class="q" style="margin-top:10px">Starting goals and volumes are suggestions. Adjust them with the player and S&C staff.</div>`}
+const DTL={pre:"Pre-pitch",step:"First step",range:"Range",catch:"Catch",throw:"Throw"};
+const DD={
+"Game Clock (Meet or Beat Clock)":["A play is made while a shot clock runs from the ball being hit or fielded to glove-to-target. He has to meet or beat the time standard.","For a player whose throws are accurate but late, or who loses time in the transfer and feet under pressure. A low Timing ✓ on the Leaders page points here.","The clock gives him an objective target instead of a feel. He learns the pace the play really needs, cuts wasted movement between catch and release, and gets used to throwing on time without giving up accuracy."],
+"Separator Play":["A full play, from ball to throw, on a chance hard enough to separate good defenders from average ones, run at game intensity.","For a player whose routine plays are fine but whose 4–5★ results sit below expected, or who needs to push his range out. Tough chances are where outs above average come from.","Reps at the edge of his range teach him what he can reach and how to finish the play from there. Keep it near a 70% success rate: if he makes everything, move the ball farther."],
+"Situational Separator Play":["The same hard play with a game situation attached, such as runner speed, number of outs and which base to throw to.","For a player who makes the play in practice but loses tempo or makes the wrong throw decision with a runner or the clock in mind.","It adds decision and urgency to the physical skill, so his throw choice and speed match what the game demands."],
+"Flip Fungo Mass":["A coach flips fungo grounders in quick succession and the fielder plays each one from pre-pitch through the throw.","For high-volume work on the full play when he needs lots of quality reps in a short window, such as game prep.","High-tempo reps off a real batted ball build rhythm between pre-pitch, first step, catch and throw, and sharpen the transfer and arm while he is a little tired."],
+"Live BP w/o Runners":["The fielder plays his position against live batting practice, reading real batted balls and throwing to a base. No runners.","The closest thing to the game we can get. Use it when a skill looks good on a machine or fungo but does not show up in games, and to prepare for games.","Real bat sound, spin and speed train reads and first step in a way a machine can not, and the throw finishes the play. Prioritize live reads across a whole development cycle."],
+"BP Option 4 (Pre-Pitch Full Play)":["Live BP where he does his pre-pitch on every pitch and plays every ball hit to him all the way through the throw.","For a player whose pre-pitch (being on the way down at contact) is inconsistent, so his first step and range suffer.","It ties the pre-pitch timing to the pitch, so he learns to be moving at contact. Because he finishes the play, the better start carries into range, catch and throw."],
+"Self Fed Mass Fungo":["The player hits himself ground balls one after another and plays each one through the throw.","For extra volume when no coach is available, or to groove footwork and the transfer on his own.","Lots of repetition on catch and throw mechanics. It is weaker for range and first step because he knows where the ball is going, so pair it with batted-ball work."],
+"Machine Range Ruler":["A machine shoots balls to spots farther and farther to either side so you can see how far he reaches, and he finishes with a throw.","For a range problem: low range success, low OAA, or a weak side on the Direction columns. It gives a clear measure of how far he gets.","The machine is precise, so he gets high-intensity, rangy reps at exact spots. He sees the edge of his range and the goal is to push it out over the weeks. Pre-pitch matters less here because there is no batted ball."],
+"Random Flip Fungo w/ Throw":["The coach flips fungos to random spots and directions. The fielder plays each one and throws to a target.","For a player who only looks good when he knows where the ball is going. It trains the whole play with variability.","Unpredictable directions force real reads and first steps. Finishing with a throw to a target keeps ball security and the throw tied to the effort."],
+"N/S/E/W Machine":["The machine feeds balls in four directions around the fielder (in, back, glove side, backhand side). No throw.","For a player with a weak direction, such as the backhand side or charging in, and for first step and range work at high intensity.","Reps in every direction expose a weak one and fix it. Skipping the throw keeps volume and intensity high, so you get more range reps in less time."],
+"Machine Angle Work":["The machine feeds ground balls at different angles so he practices the footwork each path needs.","For a player whose path to the ball is inefficient: an arc that is too wide, getting around the ball late, or poor footwork to one side.","He repeats a clean angle until the path becomes automatic. That shows up as a direct path, a better first step and more range."],
+"Flip Fungo Hop Reads":["Flip fungos where the focus is reading the hop and choosing how to play it: short hop, long hop or in between.","For a fielder who gets tied up by bad hops, hesitates, or lets the ball play him.","Seeing many hops teaches him to pick the hop he wants and attack it, which helps ball security and the first step into the ball."],
+"Count Hops":["He counts or calls out the hops as the ball comes to him.","For a player who watches the ball late or stops reading the hops as it arrives.","Counting keeps his eyes locked on the ball and forces an early read of the hop, so the catch gets cleaner."],
+"BP Option 3 (Pre-Pitch to Catch)":["Live BP: pre-pitch, first step, range and catch on every ball hit to him. He stops after the catch, no throw.","For work on contact-to-catch when throwing volume is a concern or on a no-throw day.","He gets many live reps at contact-to-catch, the biggest predictor of a defender's value, without adding arm stress."],
+"Self Fed Fungo (Random)":["He hits himself ground balls to random spots and fields them, usually finishing with a throw.","For general reps and footwork on his own when a coach is not available.","Random spots keep it from becoming rote and the self-feed gives volume. Pre-pitch is light because he is the one hitting the ball."],
+"DP Machine Ruler":["A machine range ruler where each ball is played and turned as a double play, such as the feed or the turn.","For a middle infielder who needs range and double-play footwork together. It is a low-workload version.","It joins range with the feed or turn, so the footwork into the throw gets practiced while he stays on the move."],
+"Red Rocket Ruler":["A ruler drill using the Red Rocket, an easy machine that can shoot real baseballs, to spots at increasing distance.","For range work on a low-workload day, or when only a simple machine is available.","The same idea as the Machine Range Ruler at lower intensity: staying on the move through the ball and getting range reps without much stress on the body."],
+"Random Flip Fungo w/o Throw":["Flip fungos to random spots. He plays each ball to the catch and does everything but the throw.","For a no-throw day, or when the arm needs a break.","He keeps the first step, range and catch work and moves his feet toward the target without the throw. We call this everything but the throw."],
+"BP Option 2 (Pre-Pitch 3 Steps)":["Live BP: pre-pitch and the first three steps on every ball hit to him, then he stops.","For a player who needs work on pre-pitch and first step but not the whole play.","Low-workload reps that link timing and the first steps to a real pitch, building a first step that goes the right way."],
+"BP Stop":["Live BP: pre-pitch and the first step, then he stops and watches the ball finish.","For a player whose pre-pitch or first step is the main issue.","Very low workload. He gets many reps of getting on the way down at contact and reading the ball off the bat."],
+"BP Option 1 (Pre-Pitch 1 Step)":["Live BP: pre-pitch and a single first step on every ball, then he stops.","For the lightest version of pre-pitch and first step work.","It trains the most important start of the play, being on time with the feet, with almost no wear on the body."],
+"Screened Pre Pitch":["Pre-pitch reps from behind a screen while a hitter or coach hits. The ball is not coming at him.","For a player who needs pre-pitch timing reps with no risk, or a lot of reps in a short time.","He practices organizing his feet to the pitch and the swing, so he is already moving when the ball is hit."],
+"Turf Work":["Routine ground balls on turf, often with Lite Flite or real balls, usually with throwdown bases.","A daily routine for every player. It builds confidence and ball security and lets you nudge small improvements.","Quality catch reps in a controlled setting. It is the base the harder drills sit on, and it should be a daily part of programming."],
+"Dual Machine Picks":["Two machines feed different hops so he has to pick the ball out of varied bounces.","For a player who needs work on ball security and hand work, especially with mixed-bag balls.","Varied hops force quick adjustments and clean catches. It trains the hands and the catch tool without needing range or a throw."]};
+const DW=[["Routines","Daily turf or machine work that builds confidence and nudges small improvements."],["Reps","Fungo reps, self-fed or flip, are a staple of both team and individual work."],["Targeted drill work","The biggest mover of development. Game-like intensity, only 2–3 times a week."],["Live BP reads","The closest to the game. Prioritize them across the whole cycle."]];
+const TPR=[["Couple reps with a throw to a target.","Pair as many reps as you can with a throw to a real target. If it is a no-throw day, do everything but the throw: secure the ball and move the feet toward the target."],["A good throw is strong, accurate and on time.","Grade all three. A throw that is strong and accurate but late still loses the out."],["Use regular baseballs when throwing is the focus.","Lite Flite balls are for turf and lead-up work. Switch to real baseballs when the throw is the point."],["Use plyo-mat targets for accuracy.","A specific spot to hit shows accuracy better than just “threw it to first.”"],["Use the game clock for timing.","Speaker and shot clock app so glove to target has to be on time."],["Train throws the way they happen in games.","Games bring throws on the run, off balance and from odd angles. Train the ones he struggles with, with variability, instead of only set throws."],["Use catch play as the daily delivery.","Catch play is already in every day. Add one throw variation to it for a few minutes, and the reps stack up with no extra workload."],["Build up slowly.","Add speed or difficulty only after he is accurate at the easier level. Aim for about a 70% success rate."]];
+const TP={
+"On the run":{tc:"Football-style throws on the run in daily catch play, 10–15 a day, then to a plyo-mat target.",fix:"Throws that go off line or late when he is moving through the ball: charge plays, slow rollers, bare-hand plays, and balls he fields on the move.",cp:"Football throws on the run. Partners 40–60 ft apart. He jogs toward a throw line and throws on the move, like a quarterback rolling out, to both sides. 10–15 a day.",pg:"1) Walk through the throw at a target. 2) Jog and throw. 3) Field a short fungo or a roll, then throw through it. 4) Fungo or machine ball on the run with the game clock.",rp:"10–15 football throws in catch play every day. On a High day, 5–8 on-the-run throws to a plyo-mat target after a real fielded ball.",why:"Throwing on the run is a skill of its own. He has to keep the hips and feet pointed at the target while his body is still moving. Rehearsing it when it is easy makes it automatic when it counts."},
+"Off-balance":{tc:"Throws from drift, spin and one knee in catch play, 8–10 a day, partner picks the angle.",fix:"Throws from awkward positions: across the body, falling away, from the knees, after a dive, or off the wrong foot.",cp:"Throws from awkward spots. Partner calls the angle: across the body, off one knee, drifting sideways, after a quick spin. 8–10 a day at about 70% effort.",pg:"1) Slow, from a knee. 2) Moving sideways with a drift. 3) After a quick spin or a ball to the backhand side. 4) Fungo or machine ball, then throw with the game clock.",rp:"8–10 awkward-position throws in catch play each day. On a High day, play them off fungo or machine balls to a plyo-mat target.",why:"Off-balance throws decide tough plays. The goal is to find a quick throwing base or a short, clean arm action from wherever he ends up, so he does not rush or lose the ball."},
+"Jump":{tc:"A few jump throws in catch play, 5–8 a day, working on a clean landing and aiming the hips.",fix:"Jump throws from the hole or on the backhand side, where he has to leave the ground to get the ball across.",cp:"Jump throws in catch play after he is warm. Start at 40–50 ft at about 70% effort. 5–8 a day. Focus on the landing and keeping hips and shoulders pointed at the target.",pg:"1) Standing jump throw at a short distance. 2) Jump after a backhand pick. 3) Jump from a deeper spot. 4) Fungo or machine ball, then jump throw with the clock.",rp:"5–8 jump throws in catch play daily, and the same on a High day off a fungo ball.",why:"Jump throws are on the plays that separate infielders: deep-hole and backhand chances. He will not have the time to set his feet, so he needs to rehearse it."},
+"Set":{tc:"Start catch play with the footwork pattern he struggles with (1-step, 2-step shuffle or crow hop), 10 a day.",fix:"Throws with time to set the feet that are still off line or late. These should be the most consistent throws.",cp:"Name the footwork pattern before each set of catch play: quick release, 1-step shuffle, 2-step shuffle, crow hop. 10 a day, to a target.",pg:"1) Pattern at short distance. 2) Pattern at full distance. 3) Pattern off a fungo ball. 4) Pattern with the game clock.",rp:"10 footwork-pattern throws in catch play every day, and again off fungo balls on Moderate and High days.",why:"Set throws are the most common throw. A repeatable footwork pattern gives him a throw he can trust, and it carries over to every other throw."},
+"Flip":{tc:"Glove flips and underhand tosses from 15–30 ft in catch play, 10 a day.",fix:"Short flips and underhand tosses on double plays or plays near the bag that are soft, late or off target.",cp:"Flips and underhand tosses from 15–30 ft, plus backhand flips. 10 a day, with a partner holding a target at chest height.",pg:"1) Set flip to a target. 2) Flip after a short ground ball. 3) Backhand flip. 4) Machine or fungo ball with the clock.",rp:"10 flips in catch play daily and as part of any double-play drill.",why:"A flip has to be soft, on target and fast. Small errors cost the double play."}};
+const SC={"Quick release (no shuffle)":"Ball out fast with little footwork. Used on short plays when time is tight. Work on quick hands and a short arm action.","1-step shuffle":"One gather step toward the target, then throw. The common set throw on routine plays. Keep the step on a line to the target.","2-step shuffle":"Two small steps to get feet and hips lined up, used on longer throws or when he has time. Stay under control and do not over-shuffle.","Crow hop":"A hop toward the target to build momentum on a long throw from deep in the hole. Hop on line, not around the target.","Backhand drop step":"Plant after a backhand pick and drop the back foot to turn to the target. Get the turn done before the throw.","Throw-through (right-left)":"Field in rhythm and throw through the momentum on a charge play. Keep the feet moving toward the target.","Bare-hand and throw":"Pick a slow roller bare-handed and throw in one motion. Work on quick hands and a clean grip.","Backhand, on the run":"Throw on the move after fielding to the backhand side. Get the hips turned toward the target as he comes out of the backhand.","Across the body":"Throw when the body is turned away from the target. Rotate the hips and shoulders to the target as the arm comes through.","Falling away":"Throw while drifting away from the target. Keep the arm action short and finish on target.","Sidearm / low slot":"A lower arm slot when time is short. Watch for a throw that sails or tails away.","From the knees":"Throw from one or both knees after a dive or a stop. Use the core and trunk to drive the throw.","After a dive":"Recover and throw after laying out. Get a base under him quickly, then throw.","Off the wrong foot":"Fielded the ball with the wrong foot forward. Use a short hop or a drop step to line up.","Jump throw":"Leave the ground to throw from the hole. Land on balance with the hips pointing at the target.","Backhand jump / spin":"Backhand pick with a jump or spin to turn to first. Needs a clean spin and a clear target.","Glove flip / underhand":"Soft flip to the bag on a double play or close play. Aim at chest height.","Backhand flip":"Backhand glove flip to the bag. Keep the flip soft and on a line."};
+const vn=v=>{v=(v||"").trim();return v&&!/^https?:\/\//i.test(v)?"https://"+v:v};
+const idb=()=>new Promise((ok,no)=>{try{const r=indexedDB.open("rpvid",1);r.onupgradeneeded=()=>r.result.createObjectStore("v");r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)}catch(e){no(e)}});
+const vput=(k,b)=>idb().then(d=>new Promise((ok,no)=>{const q=d.transaction("v","readwrite");q.objectStore("v").put(b,k);q.oncomplete=ok;q.onerror=()=>no(q.error);q.onabort=()=>no(q.error)}));
+const vget=k=>idb().then(d=>new Promise((ok,no)=>{const r=d.transaction("v").objectStore("v").get(k);r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)}));
+const vdel=k=>idb().then(d=>new Promise(ok=>{const q=d.transaction("v","readwrite");q.objectStore("v").delete(k);q.oncomplete=ok;q.onerror=ok})).catch(()=>{});
+const vw=x=>(x.vid&&/^https?:\/\//i.test(x.vid)?`<a class="vl" href="${esc(x.vid)}" target="_blank" rel="noopener noreferrer">▶ Link</a>`:"");
+const dA=id=>{try{if(window.claude&&claude.use)claude.use("assets").then(a=>a&&a.delete(id)).catch(()=>{})}catch(e){}};
+async function upl(f){try{const a=window.claude&&claude.use?await claude.use("assets"):null;if(!a)return{err:"none"};if(f.size>20*1048576)return{err:"big"};const r=await a.upload(f,{type:/webm/i.test(f.type)?"video/webm":"video/mp4"});return{id:r.id}}catch(e){return{err:(e&&e.code)||"error"}}}
+function attach(id,f){try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+const fin=m=>{V.msg=((V.msg||"").replace("Saving video…","")+" "+m).trim();rd()};
+return upl(f).then(r=>{const x=S.pk.find(q=>q.id===id);if(!x)return;
+if(r.id){x.va=r.id;x.hv=1;save();fin("Video saved ✓");return}
+const why=r.err==="big"?"That clip is over 20 MB, so it can’t be stored online. Trim it in Photos to about 20 seconds or less.":r.err==="none"?"Online video storage isn’t available in this view.":"The online upload failed ("+r.err+").";
+return vput(id,f).then(()=>{x.hv=1;save();fin(why+" It was saved on this device only and may not play.")}).catch(()=>fin(why+" It also couldn’t be saved on this device."))})}
+function attachV(id,f){if(RO)return;if(!f)return;V.ve=null;V.msg="Saving video…";rd();attach(id,f)}
+function delAllV(){if(RO)return;if(V.cf!=="delv"){V.cf="delv";rd();return}V.cf=null;let n=0;S.pk.forEach(x=>{if(x.hv||x.va){if(x.va)dA(x.va);delete x.hv;delete x.va;n++}});idb().then(d=>new Promise(ok=>{const q=d.transaction("v","readwrite");q.objectStore("v").clear();q.oncomplete=ok;q.onerror=ok})).catch(()=>{});V.ve=null;V.dvn=n;save();rd()}
+function rmV(id){if(RO)return;vdel(id);const x=S.pk.find(q=>q.id===id);if(x){if(x.va)dA(x.va);delete x.hv;delete x.va}V.ve=null;save();rd()}
+function saveV(id){if(RO)return;const x=S.pk.find(q=>q.id===id);x.vid=vn(document.getElementById("vu").value);V.ve=null;save();rd()}
+function vErr(el){const d=el.parentNode.querySelector(".verr");if(d)d.textContent="This browser couldn’t play the video here (code "+(el.error&&el.error.code)+"). Try Open in new tab, or add the clip again."}
+function loadLocal(id){vget(id).then(b0=>{const h=document.getElementById("vl_"+id);if(!h)return;if(!b0){h.textContent="That video isn’t on this device. Videos stay in the browser they were added from.";return}
+const b=new Blob([b0],{type:b0.type||"video/mp4"}),v=document.createElement("video");v.controls=true;v.playsInline=true;v.setAttribute("playsinline","");v.preload="metadata";v.style.cssText="width:100%;background:#000;border-radius:8px";v.onerror=()=>{h.textContent="This browser couldn’t play the video here (code "+(v.error&&v.error.code)+", "+(b.type||"no type")+", "+(b.size/1048576).toFixed(1)+" MB)."};v.src=URL.createObjectURL(b);h.textContent="";h.appendChild(v)}).catch(()=>{const h=document.getElementById("vl_"+id);if(h)h.textContent="Couldn’t open the video storage on this device."})}
+function showV(id){const x=S.pk.find(q=>q.id===id);if(V.n!=="vids"){go("vids",x.pid);V.open=id;render()}else{V.open=V.open===id?null:id;rd()}
+if(V.open&&!x.va)setTimeout(()=>loadLocal(id),0)}
+const pvH=x=>x.va?`<video controls playsinline preload="metadata" src="/_blob/${x.va}" style="width:100%;margin-top:8px;background:#000;border-radius:8px" onerror="vErr(this)" onloadstart="__dbg&&0"></video><div class="q verr"></div><a class="vl" href="/_blob/${x.va}" target="_blank" rel="noopener noreferrer">Open in new tab</a>`:`<div id="vl_${x.id}" class="q" style="margin-top:8px">Loading…</div>`;
+function vids(){const p=S.pl.find(x=>x.id===V.id);if(!p)return list();const f=V.vf||"all",all=S.pk.filter(x=>x.pid===p.id&&(x.vid)).reverse(),q=all.filter(x=>f==="all"||(f==="out"?x.res==="out":x.res!=="out"));V.vq=q.filter(x=>x.hv).map(x=>x.id);
+let h=`<button class="btn g" onclick="go('player','${p.id}')">← ${esc(p.name)}</button><h1 style="margin-top:12px">${esc(p.name)} videos</h1><div class="sub">Every play with a video link. Tap ▶ Link to open it.</div>${msg()}<div class="chips" style="margin-bottom:12px">${[["all","All"],["out","Outs"],["no","Not outs"]].map(([k,l])=>`<button class="chip ${f===k?"on":""}" onclick="lv('vf','${k}')">${l}</button>`).join("")}</div>`;
+if(!all.length)return h+`<div class="card"><div class="mut">No videos yet</div><div class="q" style="font-size:13px;margin-top:4px">Paste a video link when you log a play, or tap + Link on any recent play on ${esc(p.name)}’s page. Links are saved with the play and are in the CSV.</div></div>`;
+if(!q.length)h+=`<p class="mut">No plays match.</p>`;
+q.forEach(x=>{const d=x.x!=null?dirOf(x,p):"";h+=`<div class="card"><div class="row"><b>${x.play} · ${x.st}★ · ${RL[x.res]}${x.et?" ("+x.et.toLowerCase()+")":""}</b></div><div class="q">${x.d} · ${x.ctx}${x.x!=null?" · "+ft(x.x,x.y)+" ft":""}${d?" · "+DN[d]:""}${x.tt?" · "+x.tt:""}</div>${x.note?`<div class="q">${esc(x.note)}</div>`:""}<div>${vw(x)}</div>${V.open===x.id?pvH(x):""}</div>`});
+return h}
+function throwing(){let h=`<div class="card ban"><div class="mut">THROWING PRINCIPLES</div>${TPR.map(([a,b])=>`<div style="margin-top:8px"><b>${a}</b><div class="q" style="font-size:13px">${b}</div></div>`).join("")}</div>
+<div class="sub" style="margin-top:12px">Tap a throw type to see a program for it. The Leaders page (Throw types tab) and each player’s plan show which type he needs.</div>`;
+TT.forEach(g=>{const x=TP[g],sp=TX.find(y=>y[0]===g)[1];h+=`<details class="card" style="border-left:4px solid var(--gold)"><summary style="cursor:pointer"><b>${g}</b> <span class="q">· ${GH[g]}</span></summary><div style="margin-top:8px"><div class="mut">WHO NEEDS IT</div><div style="font-size:14px">${x.fix}</div><div class="mut" style="margin-top:8px">BUILD IT INTO CATCH PLAY</div><div style="font-size:14px">${x.cp}</div><div class="mut" style="margin-top:8px">PROGRESSION</div><div style="font-size:14px">${x.pg}</div><div class="mut" style="margin-top:8px">REPS</div><div style="font-size:14px">${x.rp}</div><div class="mut" style="margin-top:8px">WHY IT WORKS</div><div style="font-size:14px">${x.why}</div><div class="mut" style="margin-top:8px">THE THROWS</div>${sp.map(n=>`<div class="q" style="font-size:13px;margin-top:3px"><b>${n}.</b> ${SC[n]}</div>`).join("")}</div></details>`});
+return h+``}
+function drills(){const lv0=V.dl||"All",tl=V.dt||"All";
+const chip=(k,v,l,d)=>`<button class="chip ${(V[k]||d)===v?"on":""}" onclick="lv('${k}','${v}')">${l}</button>`;
+const dm=V.dm||"dr";let h=`<button class="btn g" onclick="go('list')">← Players</button><h1 style="margin-top:12px">${dm==="th"?"Throwing program":"Drill library"}</h1><div class="chips" style="margin:8px 0 12px"><button class="chip ${dm==="dr"?"on":""}" onclick="lv('dm','dr')">Drills</button><button class="chip ${dm==="th"?"on":""}" onclick="lv('dm','th')">Throwing program</button></div>${dm!=="dr"?"":`<div class="sub">What each drill is, who needs it and how it makes a player better.</div>
+<div class="card ban"><div class="mut">HOW TRAINING FITS TOGETHER</div>${DW.map(([a,b])=>`<div style="margin-top:6px"><b>${a}.</b> <span class="q" style="font-size:13px">${b}</span></div>`).join("")}<div class="q" style="margin-top:8px;font-size:13px"><b>High</b> days are fewer reps at high intensity. <b>Moderate</b> days are more reps at lower intensity. <b>Low</b> days are light work. Aim for about a 70% success rate in a drill: easier if he is far above it, harder if he is below.</div></div>
+<div class="mut" style="margin:12px 0 6px">WORKLOAD</div><div class="chips" style="margin-bottom:10px">${chip("dl","All","All","All")}${["H","M","L"].map(x=>chip("dl",x,DT[x],"All")).join("")}</div>
+<div class="mut" style="margin-bottom:6px">TRAINS</div><div class="chips" style="margin-bottom:12px">${chip("dt","All","All","All")}${Object.keys(DTL).map(k=>chip("dt",k,DTL[k],"All")).join("")}</div>`}`;
+if(dm==="th")return h+throwing();
+const L3=DR.filter(d=>(lv0==="All"||d[1]===lv0)&&(tl==="All"||d[2][tl]));
+if(!L3.length)return h+`<p class="mut">No drills match.</p>`;
+h+=`<div class="q" style="margin-bottom:8px">${L3.length} drill${L3.length>1?"s":""}. Tap one to open it.</div>`;
+L3.forEach(d=>{const x=DD[d[0]]||["","",""];h+=`<details class="card" style="border-left:4px solid ${DC[d[1]]}"><summary style="cursor:pointer"><b>${d[0]}</b> <b style="color:${DC[d[1]]};font-size:13px">· ${DT[d[1]]}</b><div class="q" style="margin-top:4px">${Object.keys(DTL).filter(k=>d[2][k]).map(k=>DTL[k]+(d[2][k]<1?" (light)":"")).join(" · ")}</div></summary><div style="margin-top:8px"><div class="mut">WHAT IT IS</div><div style="font-size:14px">${x[0]}</div><div class="mut" style="margin-top:8px">WHO NEEDS IT</div><div style="font-size:14px">${x[1]}</div><div class="mut" style="margin-top:8px">HOW IT MAKES THEM BETTER</div><div style="font-size:14px">${x[2]}</div></div></details>`});
+return h}
+const tn=id=>(S.tm.find(t=>t.id===id)||{name:""}).name;
+function setT(id){S.ct=id;V.addT=0;V.renT=0;V.cf=null;V.msg="";save();rd()}
+function addT(){if(RO)return;const n=document.getElementById("tn").value.trim();if(!n)return;const id="t"+Date.now().toString(36);S.tm.push({id,name:n});S.ct=id;V.addT=0;save();rd()}
+function renT(){if(RO)return;const n=document.getElementById("tn").value.trim();if(!n)return;S.tm.find(t=>t.id===S.ct).name=n;V.renT=0;save();rd()}
+function delT(){if(RO)return;const k="t:"+S.ct;if(S.pl.some(p=>p.tm===S.ct)){V.msg="Move or delete this team’s players first.";rd();return}if(S.tm.length<2){V.msg="Keep at least one team.";rd();return}if(V.cf!==k){V.cf=k;rd();return}V.cf=null;S.tm=S.tm.filter(t=>t.id!==S.ct);S.ct=S.tm[0].id;save();rd()}
+function mvP(v){if(RO)return;const p=S.pl.find(x=>x.id===V.id);p.tm=v;S.ct=v;save();rd()}
+function tbar(){let h=`<div class="chips" style="margin:8px 0 12px">${S.tm.map(t=>`<button class="chip ${S.ct===t.id?"on":""}" onclick="setT('${t.id}')">${esc(t.name)}</button>`).join("")}<button class="chip rw" onclick="V.addT=1;V.renT=0;rd()">+ Team</button></div>`;
+if(V.addT)h+=`<div class="card add" style="grid-template-columns:1fr auto auto"><input id="tn" placeholder="Team name"><button class="btn" onclick="addT()">Add</button><button class="btn g" onclick="V.addT=0;rd()">Cancel</button></div>`;
+if(V.renT)h+=`<div class="card add" style="grid-template-columns:1fr auto auto"><input id="tn" value="${esc(tn(S.ct))}"><button class="btn" onclick="renT()">Save</button><button class="btn g" onclick="V.renT=0;rd()">Cancel</button></div>`;
+return h}
+function bk(){const j=JSON.stringify({rangeplus:1,S:S});V.bkt=j;(navigator.clipboard?navigator.clipboard.writeText(j):Promise.reject()).then(()=>{V.msg="Backup copied. Paste it into Notes or an email to yourself.";rd()}).catch(()=>{V.msg="Select the text below and copy it.";rd()})}
+function rsB(){if(RO)return;const s=(document.getElementById("rs")||{}).value||"";let o;try{o=JSON.parse(s.trim())}catch(e){}
+if(!o||!o.S||!Array.isArray(o.S.pl)||!Array.isArray(o.S.pk)){V.msg="That doesn’t look like a Range Plus backup. Paste the whole backup text.";rd();return}
+if(V.cf!=="restore"){V.cf="restore";V.msg="This backup has "+o.S.pl.length+" players and "+o.S.pk.length+" plays. Tap Restore again to replace what is in the app now.";V.rs=s;rd();return}
+V.cf=null;S={pl:[],pk:[],last:{},tm:[],ct:""};S=Object.assign(S,o.S);mig();save();go("list")}
+function bkv(){return`<div class="card rw" style="margin-top:14px"><div class="mut">BACKUP</div><div class="q" style="font-size:13px;margin:4px 0 8px">Players, plays and teams are saved in this browser only. Copy a backup now and then.</div><button class="btn g" style="width:100%" onclick="bk()">Back up all data</button>${V.bkt?`<textarea rows="5" readonly style="margin-top:8px" onclick="this.select()">${esc(V.bkt)}</textarea>`:""}<div class="q" style="font-size:13px;margin:12px 0 6px">Restore from a backup</div><textarea id="rs" rows="3" placeholder="Paste a backup here">${esc(V.rs||"")}</textarea><button class="btn d" style="margin-top:6px" onclick="rsB()">${V.cf==="restore"?"Tap again to restore":"Restore"}</button></div>`}
+function tmgr(){return`<div class="row rw" style="margin-top:14px;gap:8px"><button class="btn g" style="flex:1" onclick="V.renT=1;V.addT=0;rd();scrollTo(0,0)">Rename team</button><button class="btn d" style="flex:1" onclick="delT()">${V.cf==="t:"+S.ct?"Tap again to delete":"Delete team"}</button></div>`}
+function list(){let h=`<h1>Players</h1>${tbar()}<div class="sub">Log every play by field location. Rate difficulty with the star scale.</div>${msg()}${stat()}
+<div class="card add rw"><input id="nm" placeholder="Player name"><select id="ps">${["SS","2B","3B","1B","UT"].map(x=>`<option>${x}</option>`).join("")}</select><button class="btn" onclick="addP()">Add</button></div>`;
+if(S.pl.some(p=>p.tm===S.ct))h+=`<div class="row" style="margin-bottom:12px"><button class="btn rw" style="flex:1" onclick="go('log')">+ Log a play</button><button class="btn g" style="flex:1" onclick="go('leaders')">Leaders</button></div>`;
+else h+=`<p class="mut">No players on this team yet. Add one above, or load the demo season below.</p>`;
+h+=`<button class="btn g" style="width:100%;margin-bottom:12px" onclick="go('drills')">Drill library</button>`;
+S.pl.filter(p=>p.tm===S.ct).forEach(p=>{const a=S.pk.filter(x=>x.pid===p.id),g=agg(a);h+=`<div class="card" onclick="go('player','${p.id}')"><div class="row"><b>${esc(p.name)} <span class="mut">${p.pos}</span></b><span class="mut">${g.n} plays</span></div><div class="mut" style="margin-top:4px">Success ${f1(g.sr)} · Est. ${f1(g.esr)} · OAA ${g.n?oa(g.oaa):"—"}</div></div>`});
+return h+tmgr()+bkv()+(S.pl.some(p=>p.demo)?`<button class="btn d rw" onclick="clearDemo()">Remove demo players</button>`:`<button class="btn g rw" onclick="demo()">Load demo season (9 players, 80 plays each)</button>`)}
+function log(){const ok=L.play&&L.st&&L.res&&L.x!=null,m=L.res==="miss",
+ch=(arr,cur,k)=>arr.map(x=>{const v=Array.isArray(x)?x[0]:x,l=Array.isArray(x)?x[1]:x;return`<button class="chip ${cur===v?"on":""}" onclick="set('${k}','${v}')">${l}</button>`}).join(""),
+tr=k=>{const[,n,q]=TL.find(t=>t[0]===k),t=L.t[k];return`<div class="card row"><div><b>${n}</b><div class="q">${q}</div></div><div class="chips" style="flex-wrap:nowrap"><button class="chip good ${t===1?"on":""}" onclick="tg('${k}',1)">✓</button><button class="chip bad ${t===-1?"on":""}" onclick="tg('${k}',-1)">✗</button></div></div>`};
+let h=`${L.eid?`<button class="btn g" onclick="go('player','${L.pid}')">← Cancel</button>`:`<button class="btn g" onclick="go('list')">← Players</button>`}<h1 style="margin-top:12px">${L.eid?"Edit play":"Log a play"}</h1>${msg()}
+<div class="card"><select onchange="chgP(this.value)">${S.pl.filter(x=>x.tm===S.ct||x.id===L.pid).map(x=>`<option value="${x.id}" ${x.id===L.pid?"selected":""}>${esc(x.name)} (${x.pos})</option>`).join("")}</select>
+<div class="row" style="margin-top:8px"><input type="date" value="${L.d}" onchange="L.d=this.value" style="flex:1"><div class="chips">${ch(["Game","Practice"],L.ctx,"ctx")}</div></div></div>
+<h2>Where did he start, and where was the ball?</h2><div class="chips" style="margin-bottom:8px"><button class="chip ${V.lm==="s"?"":"on"}" onclick="V.lm='f';rd()">Ball fielded</button><button class="chip ${V.lm==="s"?"on":""}" onclick="V.lm='s';rd()">Starting spot</button></div><div class="card" style="padding:6px"><svg viewBox="0 0 304 256" onclick="tapF(event,'log')">${FIELD}${L.x!=null?`<line x1="${L.sx*16+8}" y1="${L.sy*16+8}" x2="${L.x*16+8}" y2="${L.y*16+8}" stroke="#fff" stroke-opacity=".8" stroke-dasharray="4 3" stroke-width="1.5"/><rect x="${L.x*16}" y="${L.y*16}" width="16" height="16" fill="var(--gold)" fill-opacity=".55" stroke="var(--gold)" stroke-width="2"/>`:""}<circle cx="${L.sx*16+8}" cy="${L.sy*16+8}" r="6" fill="var(--blue)" stroke="#fff" stroke-width="2"/></svg></div>
+<div class="q">${V.lm==="s"?"Tap where he lined up before the pitch. Blue dot is his start.":L.x==null?"Tap the field where he fielded it. Home plate is at the bottom.":"Tap again to move where he fielded it. Gold square is the ball."}</div>
+<div class="q">Started about ${ft(L.sx,L.sy)} ft from home${L.x!=null?" · fielded it "+ft(L.x,L.y)+" ft from home · moved about "+cov(L)+" ft":""}. His start carries over from the last play, so change it when he lined up somewhere different.</div>
+<h2>Play</h2><div class="chips">${ch(PL,L.play,"play")}</div>
+<h2>Difficulty (out probability)</h2><div class="chips">${[1,2,3,4,5].map(n=>`<button class="chip ${L.st===n?"on":""}" onclick="set('st',${n})">${n}★</button>`).join("")}</div>
+<div class="q" style="margin-top:6px">${L.st?`${L.st}★ · ${SR[L.st-1]} out probability · ${L.st<=3?"Routine play":"Tough play"}`:"1★ is the easiest. 1–3★ are routine plays."}</div>
+<h2>Result</h2><div class="chips">${ch(RS,L.res,"res")}</div>${L.res==="err"?`<div class="q" style="margin:8px 0 6px">Error on:</div><div class="chips">${ch(["Field","Throw"],L.et,"et")}</div>`:""}
+<h2>Range</h2>${["pre","step","range"].map(tr).join("")}<div class="chips" style="margin-top:4px">${CX.map(x=>`<button class="chip ${L.c.includes(x)?"on":""}" onclick="cx('${x}')">${x}</button>`).join("")}</div>`;
+if(!m){h+=`<h2>Catch</h2>${tr("catch")}<h2>Throw</h2>${tdist(L)!=null?`<div class="q" style="margin:-4px 0 8px">About ${tdist(L)} ft throw (${/^[456]-3$/.test(L.play)?"to 1B":"to 2B"})</div>`:""}${TX.map(([g,a])=>`<div class="q" style="margin:8px 0 4px"><b>${g}</b> · ${GH[g]}</div><div class="chips">${a.map(x=>`<button class="chip ${L.tt===x?"on":""}" onclick="one('tt','${x}')">${x}</button>`).join("")}</div>`).join("")}<div style="height:10px"></div>${["arm","acc","time"].map(tr).join("")}`;
+if(L.t.acc===-1)h+=`<div class="q">Where did it miss? Pick all that apply.</div><div class="chips">${TM.map(x=>`<button class="chip ${L.tm.includes(x)?"on":""}" onclick="tgm('${x}')">${x}</button>`).join("")}${L.tm.filter(v=>!TM.includes(v)).map(v=>`<button class="chip on" onclick="tgm('${v}')">${v} (old)</button>`).join("")}</div>`}
+h+=`<h2>Video link</h2><input placeholder="https://… (optional)" value="${esc(L.vid||"")}" oninput="L.vid=this.value"><h2>Note</h2><textarea rows="2" oninput="L.note=this.value" placeholder="Optional">${esc(L.note)}</textarea>
+<div class="sticky"><button class="btn" style="width:100%;opacity:${ok?1:.55}" onclick="saveP()">${L.eid?"Save changes":"Save play"}</button></div>`;return h}
+const tbl=(t,rows)=>`<div class="card"><table><tr><th>${t}</th><th>Plays</th><th>Success</th><th>Est.</th><th>OAA</th></tr>${rows.map(([l,a])=>`<tr><td>${l}</td><td>${a.n}</td><td>${f1(a.sr)}</td><td>${f1(a.esr)}</td><td>${a.n?oa(a.oaa):"—"}</td></tr>`).join("")}</table></div>`;
+const gp=(a,k)=>{const g=a.filter(x=>x.t[k]===1).length,b=a.filter(x=>x.t[k]===-1).length;return g+b?Math.round(g/(g+b)*100)+"%":"—"};
+function player(){const p=S.pl.find(x=>x.id===V.id);if(!p)return list();const a=S.pk.filter(x=>x.pid===p.id),A=agg(a),rt=agg(a.filter(x=>x.st<=3)),tf=agg(a.filter(x=>x.st>=4));
+let h=`<button class="btn g" onclick="go('list')">← Players</button><h1 style="margin-top:12px">${esc(p.name)} <span class="mut">${p.pos}</span></h1><div class="sub">${a.length} plays logged</div>${msg()}
+<div class="row rw" style="margin-bottom:12px"><span class="q">Team</span><select style="width:auto" onchange="mvP(this.value)">${S.tm.map(t=>`<option value="${t.id}" ${t.id===p.tm?"selected":""}>${esc(t.name)}</option>`).join("")}</select></div>
+<div class="row" style="margin-bottom:12px"><button class="btn rw" style="flex:1" onclick="go('log','${p.id}')">+ Log a play</button><button class="btn g" style="flex:1" onclick="go('plan','${p.id}')">Programming plan</button></div>
+<button class="btn g" style="width:100%;margin-bottom:12px" onclick="go('vids','${p.id}')">Videos (${a.filter(x=>x.vid).length})</button>`;
+if(!a.length)return h+`<p class="mut">No plays yet.</p><button class="btn d rw" onclick="delP('${p.id}')">${V.cf===p.id?"Tap again to delete":"Delete player"}</button>`;
+h+=`<h2>Range map</h2><div class="card" style="padding:6px"><svg viewBox="0 0 304 256" onclick="tapF(event,'p')">${FIELD}${cells(a)}${sm(p)}${selR(V.cell)}</svg></div>
+<div class="q"><span style="color:#e14650">■</span> above expected · <span style="color:#4664d2">■</span> below expected · bigger square = more plays. Tap a square to see its plays.</div>`;
+if(V.cell){const c=a.filter(x=>x.x===V.cell[0]&&x.y===V.cell[1]),g=agg(c);h+=`<div class="card ban" style="margin-top:8px"><b>${c.length?c.length+" play"+(c.length>1?"s":"")+" · "+ft(V.cell[0],V.cell[1])+" ft from home":"No plays here"}</b>${c.length?`<div class="q">Success ${f1(g.sr)} · Est. ${f1(g.esr)} · OAA ${oa(g.oaa)}</div>`+c.map(x=>`<div class="q">${x.d} · ${x.play} · ${x.st}★ · ${RL[x.res]} ${vw(x)}</div>`).join(""):""}</div>`}
+h+=`<div class="tiles" style="margin-top:12px"><div class="tile"><b>${oa(A.oaa)}</b><span class="q">OAA</span></div><div class="tile"><b>${f1(A.sr)}</b><span class="q">Success</span></div><div class="tile"><b>${f1(A.esr)}</b><span class="q">Est. success</span></div><div class="tile"><b>${f1(rt.sr)}</b><span class="q">Routine 1–3★</span></div><div class="tile"><b>${f1(tf.sr)}</b><span class="q">Tough 4–5★</span></div><div class="tile"><b>${a.filter(x=>x.res==="err").length}</b><span class="q">Errors</span></div></div>`;
+if(rt.n>rt.o)h+=`<div class="card"><span class="warn">${rt.n-rt.o} routine play${rt.n-rt.o>1?"s":""} not converted. Routine plays are expected to be made.</span></div>`;
+const L2=a.filter(x=>x.x!=null),SP=hs(p);
+h+=tbl("Direction from his spot",Object.keys(DN).map(c=>[DN[c],agg(L2.filter(x=>dirOf(x,p)===c))]));
+h+=`<div class="card"><div class="row"><span class="q">Direction is measured from where he started each play when a start was logged. For older plays it uses his usual spot (gold dot), facing home plate. Tap the field to move his usual spot.</span>${p.hx!=null?`<button class="btn g rw" onclick="resetSpot('${p.id}')">Reset</button>`:""}</div><svg viewBox="0 0 304 256" onclick="tapF(event,'s')" style="margin-top:6px">${FIELD}${sm(p)}</svg><div class="q">Lines up about ${Math.round(Math.hypot(SP[0],SP[1]))} ft from home${p.hx==null?(S.pk.filter(x=>x.pid===p.id&&x.sx!=null).length>=5?" (average of his logged starts)":" (standard spot for "+p.pos+")"):""}.</div></div>`;
+const SA=a.filter(x=>x.sx!=null);
+if(SA.length){const av=SA.reduce((s,x)=>s+cov(x),0)/SA.length;h+=`<h2>Starting spots</h2><div class="card" style="padding:6px"><svg viewBox="0 0 304 256">${FIELD}${SA.map((x,i)=>`<circle cx="${x.sx*16+8+((i*7)%9-4)}" cy="${x.sy*16+8+((i*5)%9-4)}" r="3.2" fill="${x.res==="out"?"#4ade80":"#f87171"}" fill-opacity=".85" stroke="#000" stroke-opacity=".4" stroke-width=".6"/>`).join("")}</svg></div><div class="q"><span style="color:#4ade80">●</span> play ended in an out · <span style="color:#f87171">●</span> no out · each dot is where he started a play. ${SA.length} of ${a.length} plays have a logged start. He covered about ${Math.round(av)} ft on average.</div>`;
+h+=tbl("Ground covered (start to ball)",[["Short move (under 15 ft)",agg(SA.filter(x=>cov(x)<15))],["Medium (15–29 ft)",agg(SA.filter(x=>cov(x)>=15&&cov(x)<30))],["Long (30+ ft)",agg(SA.filter(x=>cov(x)>=30))]])}
+h+=tbl("Depth from home plate",[["Shallow (under 100 ft)",agg(L2.filter(x=>ft(x.x,x.y)<100))],["Normal (100–134 ft)",agg(L2.filter(x=>ft(x.x,x.y)>=100&&ft(x.x,x.y)<135))],["Deep (135+ ft)",agg(L2.filter(x=>ft(x.x,x.y)>=135))]]);
+h+=tbl("Technique",["Backhand","Forehand","Charge","Dive"].map(n=>[n,agg(a.filter(x=>x.c.includes(n)))]));
+h+=tbl("Difficulty",[1,2,3,4,5].map(n=>[n+"★ <span class='q'>"+SR[n-1]+"</span>",agg(a.filter(x=>x.st===n))]));
+const th=a.filter(x=>x.tt);h+=`<h2>Throwing</h2>`;
+if(!th.length)h+=`<p class="mut">No throws logged yet.</p>`;
+else{const tr=(l,q)=>q.length?`<tr><td>${l}</td><td>${q.length}</td><td>${gp(q,"arm")}</td><td>${gp(q,"acc")}</td><td>${gp(q,"time")}</td><td>${f1(q.filter(x=>x.res==="out").length/q.length)}</td></tr>`:"",hd=l=>`<tr><th>${l}</th><th>#</th><th>Arm</th><th>Acc.</th><th>Time</th><th>Out</th></tr>`,ne=a.filter(x=>x.res==="err");
+h+=`<div class="tiles"><div class="tile"><b>${f1(th.filter(cl).length/th.length)}</b><span class="q">Clean throws</span></div><div class="tile"><b>${gp(th,"arm")}</b><span class="q">Arm ✓</span></div><div class="tile"><b>${gp(th,"acc")}</b><span class="q">Accuracy ✓</span></div><div class="tile"><b>${gp(th,"time")}</b><span class="q">Timing ✓</span></div><div class="tile"><b>${ne.filter(x=>x.et==="Throw").length}</b><span class="q">Throwing errors</span></div><div class="tile"><b>${ne.filter(x=>x.et==="Field").length}</b><span class="q">Fielding errors</span></div></div>
+<div class="card" style="padding:6px"><svg viewBox="0 0 304 256" onclick="tapF(event,'t')">${FIELD}${tcells(th)}${selR(V.tcell)}</svg></div>
+<div class="q"><span style="color:#16a34a">■</span> mostly clean · <span style="color:#d97706">■</span> mixed · <span style="color:#dc2626">■</span> mostly poor · placed where the ball was fielded. Tap a square. Clean = arm, accuracy and timing all ✓.</div>`;
+if(V.tcell){const c=th.filter(x=>x.x===V.tcell[0]&&x.y===V.tcell[1]);h+=`<div class="card ban" style="margin-top:8px"><b>${c.length?c.length+" throw"+(c.length>1?"s":"")+" · fielded "+ft(V.tcell[0],V.tcell[1])+" ft from home":"No throws from here"}</b>${c.map(x=>`<div class="q">${x.d} · ${x.play} · ${x.tt} · ${RL[x.res]}${x.et==="Throw"?" (throwing error)":""}${tdist(x)!=null?" · "+tdist(x)+" ft":""} · ${(b=>b.length?"✗ "+b.join(", "):"clean")(["arm","acc","time"].filter(k=>x.t[k]===-1).map(k=>TL.find(t=>t[0]===k)[1]))}${tms(x).length?" ("+tms(x).join(", ")+")":""} ${vw(x)}</div>`).join("")}</div>`}
+h+=`<div class="card" style="margin-top:12px"><table>${hd("Throw type")}${TT.map(t=>tr(t,th.filter(x=>grp(x)===t))).join("")}</table></div>`;
+h+=`<div class="card"><table>${hd("Specific throw")}${TX.flatMap(g=>g[1]).map(n=>tr(n,th.filter(x=>x.tt===n))).join("")}</table></div>`;
+h+=`<div class="card"><table>${hd("Throw distance")}${tr("Short (under 90 ft)",th.filter(x=>tdist(x)!=null&&tdist(x)<90))}${tr("Medium (90–119 ft)",th.filter(x=>tdist(x)>=90&&tdist(x)<120))}${tr("Long (120+ ft)",th.filter(x=>tdist(x)>=120))}</table></div>`;
+const ms=TMA.map(t=>[t,a.filter(x=>tms(x).includes(t)).length]).filter(x=>x[1]);if(ms.length)h+=`<div class="q">Throws that missed: ${ms.map(x=>x[0]+" "+x[1]).join(" · ")}</div>`}
+const tt=TL.map(([k,n])=>{const g=a.filter(x=>x.t[k]===1).length,b=a.filter(x=>x.t[k]===-1).length;return{n,g,b,p:g+b?Math.round(g/(g+b)*100):null}}),f=tt.filter(x=>x.g+x.b>=5).sort((x,y)=>x.p-y.p)[0];
+if(f)h+=`<div class="card ban"><div class="mut">LOWEST-RATED TOOL</div><b style="font-size:18px">${f.n} · ${f.p}% good</b></div>`;
+h+=`<h2>Tools (% good)</h2>`;tt.forEach(x=>{h+=`<div class="card"><div class="row"><b>${x.n}</b><span class="mut">${x.p==null?"—":x.p+"% · "+x.g+"✓ "+x.b+"✗"}</span></div><div class="bar"><i style="width:${x.p||0}%;background:${col(x.p)}"></i></div></div>`});
+h+=`<h2>Recent plays</h2>`;
+a.slice().reverse().slice(0,V.all?99999:15).forEach(x=>{const bad=TL.filter(t=>x.t[t[0]]===-1).map(t=>t[1]);h+=`<div class="card row"><div><b>${x.play} · ${x.st}★ · ${RL[x.res]}${x.et?" ("+x.et.toLowerCase()+")":""}</b><div class="q">${x.d} · ${x.ctx}${x.x!=null?" · "+ft(x.x,x.y)+" ft":""}${x.tt?" · "+x.tt:""}${x.c.length?" · "+x.c.join(", "):""}</div>${bad.length?`<div class="warn">✗ ${bad.join(", ")}${tms(x).length?" ("+tms(x).join(", ")+")":""}</div>`:""}${x.note?`<div class="q">${esc(x.note)}</div>`:""}<div>${vw(x)}<button class="vl rw" style="cursor:pointer" onclick="V.ve='${x.id}';rd()">${x.vid?"Edit link":"+ Link"}</button></div>${V.ve===x.id?`<div style="margin-top:6px"><div class="q">Paste a video link</div><input id="vu" value="${esc(x.vid||"")}" placeholder="https://..."><button class="btn" style="margin-top:6px" onclick="saveV('${x.id}')">Save link</button></div>`:""}</div><div class="rw" style="display:flex;flex-direction:column;gap:6px"><button class="btn g" style="padding:8px 12px" onclick="editK('${x.id}')">Edit</button><button class="btn d" onclick="delK('${x.id}')">${V.cf===x.id?"Delete?":"✕"}</button></div></div>`});
+if(a.length>15)h+=`<button class="btn g" style="width:100%" onclick="V.all=!V.all;rd()">${V.all?"Show fewer":"Show all "+a.length+" plays"}</button>`;
+h+=`<div class="row" style="margin-top:12px"><button class="btn g" onclick="cp('${p.id}')">Copy as CSV</button><button class="btn d rw" onclick="delP('${p.id}')">${V.cf===p.id?"Tap again to delete":"Delete player"}</button></div>`;
+if(V.csv)h+=`<textarea rows="6" readonly style="margin-top:10px" onclick="this.select()">${esc(V.csv)}</textarea>`;return h}
+const BRAND=`<div class="brand" onclick="go('list')"><svg width="46" height="46" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="18" fill="#0a2e75"/><g fill="none" stroke="#fdb913" stroke-width="6" stroke-linecap="round"><path d="M28.8 48.0 A24 24 0 0 1 52.0 71.2"/><path d="M29.4 32.0 A40 40 0 0 1 68.0 70.6"/><path d="M30.0 16.0 A56 56 0 0 1 84.0 70.0"/></g><path d="M28 64 V80 M20 72 H36" stroke="#fff" stroke-width="7" stroke-linecap="round" fill="none"/></svg><div><b>RANGE <i>PLUS</i></b><span>Infield defense tracker</span></div></div>`;
+function render(){document.body.classList.toggle("ro",!!RO);document.getElementById("app").innerHTML=BRAND+(window.__ns?NS:"")+({list,log,player,leaders,drills,vids,plan:planView}[V.n]||list)()}
+if(S.pl.some(p=>p.demo)&&S.dv!==5){clearDemo();demo()}
+render();
+(async function(){try{if(!(window.claude&&claude.use))return;const u=await claude.use("user");CE=!!(u&&u.canEdit&&await u.canEdit());DB=await claude.use("db");if(!DB)return;
+let gm=0,gp=0;DB.doc("rp/meta").onSnapshot(s=>{META=s.exists?JSON.parse(JSON.stringify(s.data())):null;gm=1;if(gp)tryApply()},()=>{});
+DB.collection("plays").onSnapshot(q=>{PLY=q.docs.map(d=>JSON.parse(JSON.stringify(d.data())));gp=1;if(gm)tryApply()},()=>{})}catch(e){}})();
+if("serviceWorker"in navigator)addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{})});
+</script></body></html>
