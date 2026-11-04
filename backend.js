@@ -3,9 +3,10 @@
 (function(){
 var C=window.RP_CONFIG||{};
 if(!C.url||!C.key||/YOUR/.test(C.url+C.key))return; /* not set up: app runs on this device only */
-var AK="rp_auth",RK="rp_role",sess=null,role=null;
-try{sess=JSON.parse(localStorage.getItem(AK)||"null");role=localStorage.getItem(RK)}catch(e){}
+var AK="rp_auth",RK="rp_role",CK="rp_code",sess=null,role=null,code=null;
+try{sess=JSON.parse(localStorage.getItem(AK)||"null");role=localStorage.getItem(RK);code=localStorage.getItem(CK)}catch(e){}
 var H=function(tok,x){var h={apikey:C.key,"Content-Type":"application/json"};if(tok)h.Authorization="Bearer "+tok;if(x)for(var k in x)h[k]=x[k];return h};
+async function rpc(c){var r=await fetch(C.url+"/rest/v1/rpc/rp_read",{method:"POST",headers:H(null),body:JSON.stringify({code:c})});if(!r.ok)throw{code:"http-"+r.status};var tx=await r.text();return tx&&tx!=="null"?JSON.parse(tx):null}
 function keep(s){sess=s;try{if(s)localStorage.setItem(AK,JSON.stringify(s));else{localStorage.removeItem(AK);localStorage.removeItem(RK)}}catch(e){}}
 function mk(j){if(!j||!j.access_token)return null;return{access_token:j.access_token,refresh_token:j.refresh_token,exp:Date.now()+((j.expires_in||3600)*1000)-60000,email:(j.user&&j.user.email)||""}}
 async function auth(path,body){var r=await fetch(C.url+"/auth/v1/"+path,{method:"POST",headers:H(null),body:JSON.stringify(body)});var j={};try{j=await r.json()}catch(e){}
@@ -20,15 +21,27 @@ var ov=null,wait=null;
 function ui(msg,mode){
 if(!ov){ov=document.createElement("div");ov.id="rp-gate";ov.style.cssText="position:fixed;inset:0;z-index:99999;background:#050b18;color:#eef2fb;display:flex;align-items:center;justify-content:center;padding:20px;font:16px/1.4 system-ui,-apple-system,sans-serif;overflow:auto";document.body.appendChild(ov)}
 var up=mode==="up";
+if(mode==="code"){
+ov.innerHTML='<form style="width:100%;max-width:360px"><div style="text-align:center;margin-bottom:18px"><svg width="64" height="64" viewBox="0 0 100 100"><rect width="100" height="100" rx="18" fill="#0a2e75"/><g fill="none" stroke="#fdb913" stroke-width="6" stroke-linecap="round"><path d="M28.8 48.0 A24 24 0 0 1 52.0 71.2"/><path d="M29.4 32.0 A40 40 0 0 1 68.0 70.6"/><path d="M30.0 16.0 A56 56 0 0 1 84.0 70.0"/></g><path d="M28 64 V80 M20 72 H36" stroke="#fff" stroke-width="7" stroke-linecap="round" fill="none"/></svg><div style="font-weight:800;letter-spacing:.06em;margin-top:8px">RANGE <span style="color:#fdb913">PLUS</span></div></div>'
++'<div style="color:#8b9bbd;font-size:14px;margin-bottom:10px;text-align:center">Enter the team code from your coach.</div>'
++'<input id="rp-c" type="text" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Team code" style="width:100%;padding:12px;border-radius:10px;border:1px solid #1a2b52;background:#0b1630;color:#eef2fb;font-size:18px;letter-spacing:.08em;text-align:center;margin-bottom:10px">'
++(msg?'<div style="color:#f87171;font-size:14px;margin-bottom:10px;text-align:center">'+msg+'</div>':'')
++'<button type="submit" style="width:100%;padding:13px;border:0;border-radius:10px;background:#fdb913;color:#0a1730;font-weight:800;font-size:16px">Enter</button>'
++'<div id="rp-sw" style="text-align:center;color:#7aa6ff;font-size:14px;margin-top:14px;cursor:pointer">Coach sign-in</div></form>';
+ov.querySelector("#rp-sw").onclick=function(){ui("","in")};
+ov.querySelector("form").onsubmit=async function(ev){ev.preventDefault();var c=ov.querySelector("#rp-c").value.trim();if(!c){ui("Enter the code.","code");return}
+var b=ov.querySelector("button");b.disabled=true;b.textContent="One moment…";
+try{var d=await rpc(c);if(d===null){ui("That code isn’t right.","code");return}code=c;try{localStorage.setItem(CK,c)}catch(e){}role="viewer";fin()}catch(e){ui("Couldn’t check the code. Check your connection.","code")}};
+return}
 ov.innerHTML='<form style="width:100%;max-width:360px"><div style="text-align:center;margin-bottom:18px"><svg width="64" height="64" viewBox="0 0 100 100"><rect width="100" height="100" rx="18" fill="#0a2e75"/><g fill="none" stroke="#fdb913" stroke-width="6" stroke-linecap="round"><path d="M28.8 48.0 A24 24 0 0 1 52.0 71.2"/><path d="M29.4 32.0 A40 40 0 0 1 68.0 70.6"/><path d="M30.0 16.0 A56 56 0 0 1 84.0 70.0"/></g><path d="M28 64 V80 M20 72 H36" stroke="#fff" stroke-width="7" stroke-linecap="round" fill="none"/></svg><div style="font-weight:800;letter-spacing:.06em;margin-top:8px">RANGE <span style="color:#fdb913">PLUS</span></div></div>'
 +'<div style="color:#8b9bbd;font-size:14px;margin-bottom:10px;text-align:center">'+(up?"Create your account":"Sign in")+'. Use the email your coach added.</div>'
 +'<input id="rp-e" type="email" autocomplete="email" placeholder="Email" style="width:100%;padding:12px;border-radius:10px;border:1px solid #1a2b52;background:#0b1630;color:#eef2fb;font-size:16px;margin-bottom:8px">'
 +'<input id="rp-p" type="password" autocomplete="'+(up?"new-password":"current-password")+'" placeholder="Password'+(up?" (6+ characters)":"")+'" style="width:100%;padding:12px;border-radius:10px;border:1px solid #1a2b52;background:#0b1630;color:#eef2fb;font-size:16px;margin-bottom:10px">'
 +(msg?'<div style="color:#f87171;font-size:14px;margin-bottom:10px">'+msg+'</div>':'')
 +'<button type="submit" style="width:100%;padding:13px;border:0;border-radius:10px;background:#fdb913;color:#0a1730;font-weight:800;font-size:16px">'+(up?"Create account":"Sign in")+'</button>'
-+'<div id="rp-sw" style="text-align:center;color:#7aa6ff;font-size:14px;margin-top:14px;cursor:pointer">'+(up?"I already have an account":"First time? Create an account")+'</div></form>';
++'<div id="rp-sw" style="text-align:center;color:#7aa6ff;font-size:14px;margin-top:14px;cursor:pointer">'+(up?"I already have an account":"First time? Create an account")+'</div><div id="rp-cd" style="text-align:center;color:#7aa6ff;font-size:14px;margin-top:10px;cursor:pointer">Have a team code instead?</div></form>';
 var f=ov.querySelector("form");
-ov.querySelector("#rp-sw").onclick=function(){ui("",up?"in":"up")};
+ov.querySelector("#rp-sw").onclick=function(){ui("",up?"in":"up")};ov.querySelector("#rp-cd").onclick=function(){ui("","code")};
 f.onsubmit=async function(ev){ev.preventDefault();var em=ov.querySelector("#rp-e").value.trim(),pw=ov.querySelector("#rp-p").value;if(!em||!pw){ui("Enter your email and password.",mode);return}
 var b=f.querySelector("button");b.disabled=true;b.textContent="One moment…";
 try{var j=up?await auth("signup",{email:em,password:pw}):await auth("token?grant_type=password",{email:em,password:pw});
@@ -40,10 +53,12 @@ if(!ov){ui("", "in")}
 ov.innerHTML='<div style="width:100%;max-width:360px;text-align:center"><div style="font-weight:800;margin-bottom:8px">You’re signed in as '+(sess&&sess.email||"")+'</div><div style="color:#8b9bbd;margin-bottom:16px">That email isn’t on the team list yet. Ask your coach to add it, then open the app again.</div><button id="rp-so" style="padding:12px 18px;border:0;border-radius:10px;background:#1a2b52;color:#eef2fb;font-size:16px">Sign out</button></div>';
 ov.querySelector("#rp-so").onclick=function(){keep(null);location.reload()}}
 var done;
-async function after(){var r=await getRole();if(r==="none"){denied();return}if(ov){ov.remove();ov=null}done&&done()}
+function fin(){if(ov){ov.remove();ov=null}done&&done()}
+async function after(){var r=await getRole();if(r==="none"){denied();return}fin()}
 function ready(){if(wait)return wait;wait=new Promise(function(res){done=res;
 (async function(){if(sess){try{await tok();await after();return}catch(e){}}
-if(document.body)ui("","in");else document.addEventListener("DOMContentLoaded",function(){ui("","in")})})()});return wait}
+if(code){try{var d=await rpc(code);if(d!==null){role="viewer";fin();return}}catch(e){if(navigator.onLine===false){role="viewer";fin();return}}try{localStorage.removeItem(CK)}catch(e){}code=null}
+if(document.body)ui("","code");else document.addEventListener("DOMContentLoaded",function(){ui("","code")})})()});return wait}
 
 /* ---- db (same shape the app already uses) ---- */
 var subs=[];
@@ -56,11 +71,18 @@ delete:async function(){await rest("DELETE","docs?path=eq."+encodeURIComponent(p
 onSnapshot:function(cb,er){return poll(async function(){var a;try{a=await rest("GET","docs?select=data&path=eq."+encodeURIComponent(p))}catch(e){er&&er(e);return}cb({exists:!!(a&&a[0]),data:function(){return a&&a[0]?a[0].data:undefined}})},15000)}}},
 collection:function(c){return{onSnapshot:function(cb,er){return poll(async function(){var a;try{a=await rest("GET","docs?select=path,data&path=like."+encodeURIComponent(c+"/")+"*")}catch(e){er&&er(e);return}
 cb({size:a.length,docs:a.map(function(r){return{id:r.path,data:function(){return r.data}}})})},15000)}}}};
+var cp=null,ct=0;
+async function cdocs(){var n=Date.now();if(cp&&n-ct<3000)return cp;ct=n;cp=rpc(code).then(function(d){if(d===null){try{localStorage.removeItem(CK)}catch(e){}location.reload();throw{code:"bad-code"}}return d});cp.catch(function(){cp=null});return cp}
+var nope=async function(){throw{code:"read-only"}};
+var cdb={doc:function(p){return{get:async function(){var d=await cdocs();return{exists:p in d,data:function(){return d[p]}}},set:nope,delete:nope,
+onSnapshot:function(cb,er){return poll(async function(){var d;try{d=await cdocs()}catch(e){er&&er(e);return}cb({exists:p in d,data:function(){return d[p]}})},15000)}}},
+collection:function(c){return{onSnapshot:function(cb,er){return poll(async function(){var d;try{d=await cdocs()}catch(e){er&&er(e);return}var ks=Object.keys(d).filter(function(k){return k.indexOf(c+"/")===0&&k.slice(c.length+1).indexOf("/")<0});
+cb({size:ks.length,docs:ks.map(function(k){return{id:k,data:function(){return d[k]}}})})},15000)}}}};
 document.addEventListener("visibilitychange",function(){if(!document.hidden)refresh()});
 
-window.RP_BACKEND={email:function(){return sess&&sess.email||""},role:function(){return role},signOut:function(){keep(null);location.reload()}};
+window.RP_BACKEND={email:function(){return sess&&sess.email||""},role:function(){return role},signOut:function(){keep(null);try{localStorage.removeItem(CK)}catch(e){}location.reload()}};
 window.claude={use:async function(n){
 if(n==="user"){await ready();return{canEdit:async function(){return role==="coach"},isOwner:async function(){return role==="coach"}}}
-if(n==="db"){await ready();return db}
+if(n==="db"){await ready();return sess?db:cdb}
 return null}};
 })();
